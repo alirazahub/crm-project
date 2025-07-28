@@ -1,10 +1,22 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import cors from "cors";  
+import forgetPswdRoute from "./routes/forget-pswd.js";  
+import User from "./models/usermodel.js";    
+
+
 
 const app = express();
 dotenv.config();
 
+app.use(cors({
+  origin: 'http://localhost:3000', // 👈 Allow your frontend origin
+  credentials: true, // if you're using cookies or sessions
+}));
+app.use(express.json()); 
+ app.use(forgetPswdRoute);   
+ 
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
@@ -16,6 +28,7 @@ mongoose
   .catch((err) => {
     console.error("MongoDB connection error:", err);
   });
+     
 
 
 const runFunction = () => {
