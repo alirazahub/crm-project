@@ -14,7 +14,7 @@ export default function signUp(){
         const password = e.target.password.value ;
          console.log('API URL:', process.env.NEXT_PUBLIC_API_URL); // Debug
         console.log('sending ' , email , password) ;
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sign-up` , {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sign-in` , {
             method: "post" ,
             headers: {
                'Content-Type': 'application/json',

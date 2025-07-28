@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import signUpRoute from './routes/sign-up.js'
+import signInRoute from './routes/sign-in.js'
 import cors from 'cors';
 
 const app = express();
@@ -12,7 +12,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
-app.use(signUpRoute) ;
+app.use(signInRoute) ;
 
 mongoose
   .connect(process.env.MONGO_URI, {
