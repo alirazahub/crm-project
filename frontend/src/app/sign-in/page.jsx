@@ -77,7 +77,7 @@ export default function signUp(){
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-200"
         >
-          Sign Up
+          Sign In
         </button>
       </form>
     </div>
