@@ -1,10 +1,14 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-
+import cors from "cors";
+import userRoutes from "./routes/register.js"; // Import the user registration routes
 const app = express();
+app.use(express.json());
 dotenv.config();
 
+app.use(cors()); // allow all origins
+app.use("/register", userRoutes);
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
