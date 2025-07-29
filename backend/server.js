@@ -11,9 +11,11 @@ const app = express();
 dotenv.config();
 
 app.use(cors({
-  origin: 'http://localhost:3000', // 👈 Allow your frontend origin
-  credentials: true, // if you're using cookies or sessions
+  origin: 'http://localhost:3000',
+  credentials: true,
 }));
+
+
 app.use(express.json()); 
  app.use(forgetPswdRoute);   
  
