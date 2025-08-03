@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt' ;
 
 const router = express() ;
 
-router.post('/sign-in', async (req , res)=>{
+router.post('/', async (req , res)=>{
     const { email , password } = req.body ;
     console.log(email, password) ;
     const user = await User.findOne({email}) ;

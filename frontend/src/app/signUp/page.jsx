@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
 
@@ -19,7 +18,7 @@ export default function Register() {
         role: "user",
     });
 
-    const router = useRouter(); 
+    const router = useRouter();
 
     const handleChange = (e) => {
         setFormData((prev) => ({
@@ -38,32 +37,33 @@ export default function Register() {
             return;
         }
 
-        if (!validateEmail(email)) {
-            alert("Please enter a valid Gmail address.");
-            return;
-        }
+        // if (!validateEmail(email)) {
+        //     alert("Please enter a valid Gmail address.");
+        //     return;
+        // }
 
-        if (!validatePassword(password)) {
-            alert("Password must be at least 8 characters and include upper/lowercase, numbers, and symbols.");
-            return;
-        }
+        // if (!validatePassword(password)) {
+        //     alert("Password must be at least 8 characters and include upper/lowercase, numbers, and symbols.");
+        //     return;
+        // }
 
-        if (!validatePhone(phone)) {
-            alert("Enter a valid Pakistani phone number (03XXXXXXXXX or +923XXXXXXXXX).");
-            return;
-        }
+        // if (!validatePhone(phone)) {
+        //     alert("Enter a valid Pakistani phone number (03XXXXXXXXX or +923XXXXXXXXX).");
+        //     return;
+
+        // }
 
         try {
-            const res = await fetch("http://localhost:3000/register/users", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ fullname, email, password, phone, role }),
-            });
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register/users`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ fullname, email, password, phone, role }),
+                });
 
             if (res.ok) {
                 alert("User registered successfully!");
                 router.replace('/sign-in');
-                
+
             } else {
                 const err = await res.json();
                 alert(`Registration failed: ${err.message || "Unknown error"}`);
