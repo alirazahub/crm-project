@@ -3,11 +3,15 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";  
 import forgetPswdRoute from "./routes/forget-pswd.js";  
-import User from "./models/usermodel.js";    
-
-
+import User from "./models/usermodel.js";   
+import Product from "./models/productModel.js";    
+//import userRoutes from './routes/register.js'; // Import the user registration routes
+//import signInRoute from './routes/sign-in.js';
+import productRoute from './routes/product.js';
 
 const app = express();
+app.use(express.json()); 
+
 dotenv.config();
 
 app.use(cors({
@@ -15,9 +19,15 @@ app.use(cors({
   credentials: true,
 }));
 
+app.get('/', (req, res) => {
+  res.send("Welcome to the CRM backend API");
+});
 
-app.use(express.json()); 
- app.use(forgetPswdRoute);   
+
+//app.use('/sign-in',signInRoute);
+//app.use('/register',userRoutes);
+app.use("/api/product", productRoute);
+app.use(forgetPswdRoute);   
  
 mongoose
   .connect(process.env.MONGO_URI, {
