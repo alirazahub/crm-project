@@ -36,6 +36,7 @@ res.status(500).json({message:'error at fetching product'});
 });
 //get by id
 router.get('/:id',async (req,res)=>{
+  console.log('get route hit ') ;
   try{
 const product=await Product.findById(req.params.id);
 if(!product){
@@ -61,4 +62,25 @@ router.delete('/:id',async (req,res)=>{
 res.status(500).json({message:'error at deleting product'});
   }
 });
+
+//edit product by id
+router.post('/:id',async (req,res)=>{
+
+  const {name , description , category , brand , price} = req.body ;
+  const id = req.params.id ;
+  try{
+const product=await Product.findByIdAndUpdate(id, {
+  name , description , category , brand , price
+} , {new: true});
+console.log(product) ;
+if(!product){
+    return res.status(404).json({ message: "Product not found" });
+}
+res.status(200).json(product);
+  }
+  catch(error){
+res.status(500).json({message:'error at fetching product'});
+  }
+});
+
 export default router; 

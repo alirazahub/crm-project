@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Search, Star, Edit, Eye, Heart, Package, Truck, Grid, List, Trash2 } from "lucide-react"
+import Link from "next/link"
 
 export default function ProductsDisplay() {
   const [products, setProducts] = useState([])
@@ -41,9 +42,9 @@ export default function ProductsDisplay() {
           throw new Error("NEXT_PUBLIC_API_URL environment variable is not configured")
         }
 
-        console.log("Fetching from:", `${apiUrl}/product`)
+        console.log("Fetching from:", `${apiUrl}/api/product/`)
 
-        const response = await fetch(`${apiUrl}/product`, {
+        const response = await fetch(`${apiUrl}/api/product/`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -132,11 +133,6 @@ export default function ProductsDisplay() {
     return Number.parseFloat(product.price)
   }
 
-  const handleEdit = (productId) => {
-    // Add your edit logic here - navigate to edit page or open edit modal
-    console.log("Edit product:", productId)
-    // Example: router.push(`/edit-product/${productId}`)
-  }
 
   const handleDelete = async (productId) => {
     if (!confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
@@ -285,13 +281,17 @@ export default function ProductsDisplay() {
 
           {/* Edit and Delete Buttons */}
           <div className="flex gap-2">
+
+            <Link href={`/${product._id}`}>
             <button
-              onClick={() => handleEdit(product._id)}
+
               className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-800 text-white py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
             >
               <Edit size={20} />
               Edit
             </button>
+            </Link>
+            
             <button
               onClick={() => handleDelete(product._id)}
               disabled={deleteLoading === product._id}
