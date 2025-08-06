@@ -2,6 +2,7 @@
 
 import { useState } from 'react' ;
 import { useRouter } from 'next/navigation';
+import GoogleSignIn from '../../../components/google-sign-in';
 
 export default function signUp(){
 
@@ -80,6 +81,7 @@ export default function signUp(){
           Sign In
         </button>
       </form>
+      <GoogleSignIn />
     </div>
     );
 }

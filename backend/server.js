@@ -5,8 +5,8 @@ import cors from "cors";
 import forgetPswdRoute from "./routes/forget-pswd.js";  
 import User from "./models/usermodel.js";   
 import Product from "./models/productModel.js";    
-//import userRoutes from './routes/register.js'; // Import the user registration routes
-//import signInRoute from './routes/sign-in.js';
+import userRoutes from './routes/register.js'; // Import the user registration routes
+import signInRoute from './routes/sign-in.js';
 import productRoute from './routes/product.js';
 
 const app = express();
@@ -24,8 +24,8 @@ app.get('/', (req, res) => {
 });
 
 
-//app.use('/sign-in',signInRoute);
-//app.use('/register',userRoutes);
+app.use(signInRoute);
+app.use(userRoutes);
 app.use("/api/product", productRoute);
 app.use(forgetPswdRoute);   
  

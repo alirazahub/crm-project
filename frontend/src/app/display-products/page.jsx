@@ -282,7 +282,7 @@ export default function ProductsDisplay() {
           {/* Edit and Delete Buttons */}
           <div className="flex gap-2">
 
-            <Link href={`/${product._id}`}>
+            <Link href={`/${product._id}`} prefetch={false}>
             <button
 
               className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-800 text-white py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
