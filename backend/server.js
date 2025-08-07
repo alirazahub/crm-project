@@ -30,7 +30,7 @@ app.use("/api/product", productRoute);
 app.use(forgetPswdRoute);   
  
 mongoose
-  .connect(process.env.MONGO_URI, {
+.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -38,7 +38,7 @@ mongoose
     console.log("MongoDB connected successfully");
   })
   .catch((err) => {
-    console.error("MongoDB connection error:", err);
+  console.error(" MongoDB connection error:", err.message);
   });
      
 
