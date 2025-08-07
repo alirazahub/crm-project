@@ -14,9 +14,9 @@ app.use(cors({
   credentials: true, // if you're using cookies or sessions
 }));
 
-app.use('/sign-in',signInRoute);
-app.use('/register',userRoutes);
-app.use('/product',productRoute);
+app.use('/sign-in', signInRoute);
+app.use('/register', userRoutes);
+app.use('/product', productRoute);
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
