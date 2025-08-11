@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function DisplayProducts() {
+export default function UserProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -25,23 +25,13 @@ export default function DisplayProducts() {
     fetchProducts();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this product?')) return;
+  const handleAddToCart = (product) => {
+    // Implement your add-to-cart logic here
+    alert(`Added "${product.name}" to cart!`);
+  };
 
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/product/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (res.ok) {
-        setProducts((prev) => prev.filter((product) => product._id !== id));
-      } else {
-        alert('Delete failed');
-      }
-    } catch (error) {
-      console.error('Error deleting product:', error);
-      alert('Delete failed');
-    }
+  const handleShopNow = (productId) => {
+    router.push(`/product/${productId}`); // Assuming this is your product detail page route
   };
 
   if (loading) {
@@ -62,7 +52,7 @@ export default function DisplayProducts() {
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
-      <h1 className="text-4xl font-bold mb-8 text-gray-800">Product Management</h1>
+      <h1 className="text-4xl font-bold mb-8 text-gray-800">Shop Our Products</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {products.map((product) => (
@@ -78,10 +68,6 @@ export default function DisplayProducts() {
               <p className="text-sm text-gray-600 mb-1">
                 <span className="font-medium">Price:</span> ${product.price?.toFixed(2) || '0.00'}
               </p>
-              <p className="text-sm text-gray-600 mb-1">
-                <span className="font-medium">Stock Quantity:</span>{' '}
-                {product.stock?.quantity ?? 'N/A'}
-              </p>
               <p className="text-sm text-gray-600 mb-4">
                 <span className="font-medium">Description:</span>{' '}
                 {product.description?.length > 100
@@ -92,16 +78,16 @@ export default function DisplayProducts() {
 
             <div className="flex gap-4">
               <button
-                onClick={() => router.push(`/edit-product/${product._id}`)}
-                className="flex-grow bg-blue-600 hover:bg-blue-700 text-white rounded-md py-2 font-semibold transition"
+                onClick={() => handleAddToCart(product)}
+                className="flex-grow bg-green-600 hover:bg-green-700 text-white rounded-md py-2 font-semibold transition"
               >
-                Edit
+                Add to Cart
               </button>
               <button
-                onClick={() => handleDelete(product._id)}
-                className="flex-grow bg-red-600 hover:bg-red-700 text-white rounded-md py-2 font-semibold transition"
+                onClick={() => handleShopNow(product._id)}
+                className="flex-grow bg-blue-600 hover:bg-blue-700 text-white rounded-md py-2 font-semibold transition"
               >
-                Delete
+                Shop Now
               </button>
             </div>
           </div>
