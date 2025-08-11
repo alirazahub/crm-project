@@ -1,5 +1,5 @@
 
-import {handleGoogleSignIn} from '../lib/actions' ;
+import {handleGoogleSignIn} from '../../lib/actions' ;
  
 export default function GoogleSignIn() {
   return (

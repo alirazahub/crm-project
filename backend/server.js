@@ -8,6 +8,7 @@ import Product from "./models/productModel.js";
 import userRoutes from './routes/register.js'; // Import the user registration routes
 import signInRoute from './routes/sign-in.js';
 import productRoute from './routes/product.js';
+import googleSignInRoute from './routes/google-sign-in.js';
 
 const app = express();
 app.use(express.json()); 
@@ -20,7 +21,7 @@ app.use(cors({
 }));
 
 app.get('/', (req, res) => {
-  res.send("Welcome to the CRM backend API");
+  res.send("Welcome to the CRM backend API server is running at port 3000");
 });
 
 
@@ -28,20 +29,18 @@ app.use(signInRoute);
 app.use(userRoutes);
 app.use("/api/product", productRoute);
 app.use(forgetPswdRoute);   
+app.use(googleSignInRoute); // Add Google sign-in route
  
-mongoose
-.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
-    console.log("MongoDB connected successfully");
-  })
-  .catch((err) => {
-  console.error(" MongoDB connection error:", err.message);
-  });
-     
 
+    console.log("✅  MONGODB Connected successfully");
+    
+  })
+  .catch(err => {
+    console.error("❌ Connection error:", err.message);
+    process.exit(1);
+  });
 
 
 const runFunction = () => {

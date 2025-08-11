@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 
-const router = express() ;
+const router = express.Router() ;
 
 router.post('/sign-in', async (req , res)=>{
     const { email , password } = req.body ;
@@ -16,8 +16,25 @@ router.post('/sign-in', async (req , res)=>{
     {
         console.log(user) ;
         const isMatch = await bcrypt.compare(password, user.password);
-        if(isMatch)
-            res.status(200).json('login successful') ;
+        if(isMatch) {
+            // Generate JWT token
+            const token = jwt.sign(
+                { id: user._id, email: user.email, role: user.role },
+                process.env.JWT_SECRET || "your-secret-key",
+                { expiresIn: "7d" }
+            );
+            
+            res.status(200).json({
+                message: "Login successful",
+                token: token,
+                user: {
+                    id: user._id,
+                    email: user.email,
+                    name: user.fullname,
+                    role: user.role
+                }
+            });
+        }
         else
             res.send({error : "passwords dont match"}) ;
     }

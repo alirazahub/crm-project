@@ -4,7 +4,7 @@ import User from "../models/usermodel.js"; // Adjust the path as necessary
 
 const router = express.Router();
 
-router.post("/users", async (req, res) => {
+router.post("/register/users", async (req, res) => {
     try {
         console.log("POST /register/users called");
         console.log("Request Body:", req.body);
