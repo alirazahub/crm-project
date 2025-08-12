@@ -10,7 +10,7 @@ import userRoutes from './routes/register.js'; // Import the user registration r
 import signInRoute from './routes/sign-in.js';
 import productRoute from './routes/product.js';
 import googleSignInRoute from './routes/google-sign-in.js';
-import cors from "cors";
+
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.js";
 
@@ -23,10 +23,7 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true,
-}));
+
 
 app.get('/', (req, res) => {
   res.send("Welcome to the CRM backend API server is running at port 3000");
