@@ -1,23 +1,26 @@
 import Link from "next/link";
-import { signOut, auth } from "@/auth";
+//import { signOut, auth } from "@/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export default async function Dashboard() {
-  const session = await auth();
+  //const session = await auth();
+
   const cookieStore = await cookies();
-  console.log(cookieStore.get("session"));
+  const cookie = cookieStore.get("token");
+
 
   // Check if user is authenticated
-  if (!session) {
+  if (!cookie) {
+    console.log('cookie not found')
     redirect("/sign-in");
   }
 
-  // Check user role and redirect non-admin users
+  /* Check user role and redirect non-admin users
   if (session.user?.role !== "admin") {
     console.log("User role:", session.user?.role, "- Redirecting to customer homepage");
     redirect("/customer/homepage");
-  }
+  }*/
 
   // Only admin users can see this dashboard
   return (
@@ -52,7 +55,7 @@ export default async function Dashboard() {
             "use server";
             const cookieStore = await cookies();
             cookieStore.delete("session");
-            await signOut({ redirectTo: "/sign-in" });
+            await signOut({ redirectTo: "/" });
           }}
         >
           <button

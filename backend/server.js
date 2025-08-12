@@ -9,10 +9,9 @@ import Product from "./models/productModel.js";
 import userRoutes from './routes/register.js'; // Import the user registration routes
 import signInRoute from './routes/sign-in.js';
 import productRoute from './routes/product.js';
-import googleSignInRoute from './routes/google-sign-in.js';
 
 import cookieParser from "cookie-parser";
-import authRoutes from "./routes/auth.js";
+
 
 dotenv.config();
 const app = express();
@@ -30,11 +29,11 @@ app.get('/', (req, res) => {
 });
 
 
-app.use(signInRoute);
+app.use('/api' ,signInRoute);
 app.use(userRoutes);
 app.use("/api/product", productRoute);
 app.use(forgetPswdRoute);   
-app.use(googleSignInRoute); // Add Google sign-in route
+
  
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {

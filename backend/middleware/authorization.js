@@ -2,7 +2,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/usermodel.js";
 
-export const protect = async (req, res, next) => {
+const authorize = async (req, res, next) => {
   let token;
   
   // Check for token in Authorization header or cookies
@@ -30,8 +30,13 @@ export const protect = async (req, res, next) => {
       console.log('User not found in database for ID:', decoded.id);
       return res.status(401).json({ message: "User not found" });
     }
+
+    if(req.user.role != 'admin')
+    {
+    console.log('User not authorized:', decoded.id);
+    return res.status(401).json({ message: "Not authorized" });
+    }
     
-    console.log('User authenticated successfully:', req.user.email);
     next();
   } catch (error) {
     console.error('Token verification error:', error.message);
@@ -40,3 +45,4 @@ export const protect = async (req, res, next) => {
   }
 };
 
+export default authorize ;

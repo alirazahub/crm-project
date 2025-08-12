@@ -19,7 +19,7 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/login", { email, password });
+      const response = await api.post("/sign-in", { email, password });
       return response.data.user;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Login failed");
@@ -33,6 +33,19 @@ export const fetchCurrentUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await api.get("/auth/me");
+      return data;
+    } catch {
+      return rejectWithValue(null);
+    }
+  }
+);
+
+// GET PROFILE
+export const authorize = createAsyncThunk(
+  "auth/authorizeUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await api.get("/api/admin");
       return data;
     } catch {
       return rejectWithValue(null);

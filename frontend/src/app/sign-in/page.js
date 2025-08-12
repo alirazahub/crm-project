@@ -3,43 +3,32 @@
 import { useState } from 'react' ;
 import { useRouter } from 'next/navigation';
 import GoogleSignUp from '../../components/GoogleSignUp';
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../../store/slices/authSlice";
 
-export default function signUp(){
+export default function signIn(){
 
-  const [error , setError ] = useState(null) ;
-  const router = useRouter(); 
-
+  const dispatch = useDispatch();
+    const router = useRouter();
+    const { user, error } = useSelector((state) => state.auth);
+  
+    const [formData, setFormData] = useState({ email: "", password: "" });
+  
+    const handleChange = (e) => {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+  
     const handleSubmit = async (e) => {
-        e.preventDefault() ;
-        const email = e.target.email.value ;
-        const password = e.target.password.value ;
-         console.log('API URL:', process.env.NEXT_PUBLIC_API_URL); // Debug
-        console.log('sending ' , email , password) ;
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sign-in` , {
-            method: "post" ,
-            headers: {
-               'Content-Type': 'application/json',
-              },
-            body: JSON.stringify({
-              email,
-              password
-  }),
-        });
-        const data = await response.json();
-        console.log(data);
-        
-        if(data.error) {
-          setError(data.error) ;
-        }
-        else if(response.status === 200) {
-          // Check user role and redirect accordingly
-          if (data.user && data.user.role === "admin") {
-            router.replace('/dashboard');
-          } else {
-            router.replace('/customer/homepage');
-          }
-        }
-    }
+      e.preventDefault();
+      const result = await dispatch(loginUser(formData));
+      if (result.meta.requestStatus === "fulfilled") {
+        console.log(user) ;
+        if(user.role == 'admin')
+            router.replace("/dashboard");
+        else
+            router.replace("customer/homepage") ;
+      }
+    };
 
     return(
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-50 to-indigo-100">
@@ -65,6 +54,7 @@ export default function signUp(){
                         <input
                             type="email"
                             name="email"
+                            onChange={handleChange}
                             required
                             className="w-full px-4 py-2 border rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -75,6 +65,7 @@ export default function signUp(){
                         <input
                             type="password"
                             name="password"
+                            onChange={handleChange}
                             required
                             className="w-full px-4 py-2 border rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
