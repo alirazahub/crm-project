@@ -1,7 +1,8 @@
 import Link from "next/link";
-//import { signOut, auth } from "@/auth";
+import { signOut, auth } from "@/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+
 
 export default async function Dashboard() {
   //const session = await auth();
@@ -16,11 +17,7 @@ export default async function Dashboard() {
     redirect("/sign-in");
   }
 
-  /* Check user role and redirect non-admin users
-  if (session.user?.role !== "admin") {
-    console.log("User role:", session.user?.role, "- Redirecting to customer homepage");
-    redirect("/customer/homepage");
-  }*/
+  
 
   // Only admin users can see this dashboard
   return (
@@ -41,6 +38,20 @@ export default async function Dashboard() {
           </Link>
 
           <Link
+            href="dashboard/assign-roles"
+            className="block w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition duration-200"
+          >
+            Assign Role
+          </Link>
+          
+          <Link
+            href="dashboard/track-roles"
+            className="block w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition duration-200"
+          >
+            Track Roles
+          </Link>
+
+          <Link
             href="/display-products"
             className="block w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded transition duration-200"
           >
@@ -55,6 +66,7 @@ export default async function Dashboard() {
             "use server";
             const cookieStore = await cookies();
             cookieStore.delete("session");
+            cookieStore.delete("token") ;
             await signOut({ redirectTo: "/" });
           }}
         >

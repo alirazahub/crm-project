@@ -22,8 +22,8 @@ export default function signIn(){
       e.preventDefault();
       const result = await dispatch(loginUser(formData));
       if (result.meta.requestStatus === "fulfilled") {
-        console.log(user) ;
-        if(user.role == 'admin')
+        console.log(result.payload) ;
+        if(result.payload.role == 'admin')
             router.replace("/dashboard");
         else
             router.replace("customer/homepage") ;

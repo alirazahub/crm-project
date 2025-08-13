@@ -24,7 +24,7 @@ export default function HomePage() {
   if (!isInitialized || loading) {
     return (
       <main style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-        <p>Loading...</p>
+        <p>HomePage</p>
       </main>
     );
   }

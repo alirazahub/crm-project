@@ -40,18 +40,7 @@ export const fetchCurrentUser = createAsyncThunk(
   }
 );
 
-// GET PROFILE
-export const authorize = createAsyncThunk(
-  "auth/authorizeUser",
-  async (_, { rejectWithValue }) => {
-    try {
-      const { data } = await api.get("/api/admin");
-      return data;
-    } catch {
-      return rejectWithValue(null);
-    }
-  }
-);
+
 
 // LOGOUT
 export const logoutUser = createAsyncThunk(

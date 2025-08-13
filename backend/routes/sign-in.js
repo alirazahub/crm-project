@@ -105,7 +105,7 @@ router.post("/google-sign-in", async (req, res) => {
 
 router.get('/admin' , authorize , (req, res)=>{
     return res.status(200).json({
-        user : req.user
+         message: "Welcome Admin!"
     }) ;
 } )
 

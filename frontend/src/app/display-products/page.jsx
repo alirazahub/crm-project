@@ -2,15 +2,24 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import api from '@/utils/api';
 
 export default function DisplayProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [authorize , setAuthorize] = useState('') ;
   const router = useRouter();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        const authorize = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin`);
+        if(authorize.status === 403 )
+          return router.replace('/sign-in' ) ;
+        console.log(authorize) ;
+        const {message } = authorize.data ;
+        console.log(message) ;
+        setAuthorize(message) ;
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/product`);
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
@@ -23,7 +32,7 @@ export default function DisplayProducts() {
     };
 
     fetchProducts();
-  }, []);
+  }, [ authorize]);
 
   const handleDelete = async (id) => {
     if (!confirm('Are you sure you want to delete this product?')) return;
@@ -63,7 +72,7 @@ export default function DisplayProducts() {
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       <h1 className="text-4xl font-bold mb-8 text-gray-800">Product Management</h1>
-
+      <h2>{authorize}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {products.map((product) => (
           <div

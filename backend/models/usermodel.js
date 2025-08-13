@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt' ;
 const UserSchema = new mongoose.Schema({
   fullname: { type: String, required: true },
   email: { type: String, unique: true, required: true },
-  role: { type: String, enum: ["user", "admin"], default: "user" },
+  role: { type: String, enum: ["user", "admin" , "sales" , "manager"], default: "user" },
   password: { type: String, required: false }, // Made optional for Google users
   phone: { type: String, },
   address: { type: String, },
@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
 // Hash password before save
 UserSchema.pre("save", async function(next) {
   if (!this.isModified("password")) return next();
-  this.password = bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
