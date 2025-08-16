@@ -15,7 +15,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           },
           body: JSON.stringify({
             name: user.name,
-            email: user.email,
+            email: user.email,      
             image: user.image,
           }),
         })
