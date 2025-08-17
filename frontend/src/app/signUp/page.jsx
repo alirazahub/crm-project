@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import GoogleSignUp from '../../components/GoogleSignUp';
@@ -7,37 +6,38 @@ import GoogleSignUp from '../../components/GoogleSignUp';
 // --- Validators ---
 const validateEmail = (email) => /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
 const validatePassword = (password) =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/.test(password);
-const validatePhone = (phone) =>
-    /^(03\d{9}|\+923\d{9})$/.test(phone);
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/.test(
+    password
+  );
+const validatePhone = (phone) => /^(03\d{9}|\+923\d{9})$/.test(phone);
 
 export default function Register() {
-    const [formData, setFormData] = useState({
-        fullname: "",
-        email: "",
-        password: "",
-        phone: "",
-        role: "user",
-    });
+  const [formData, setFormData] = useState({
+    fullname: "",
+    email: "",
+    password: "",
+    phone: "",
+    role: "user",
+  });
 
     const router = useRouter(); 
 
-    const handleChange = (e) => {
-        setFormData((prev) => ({
-            ...prev,
-            [e.target.name]: e.target.value,
-        }));
-    };
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        const { fullname, email, password, phone, role } = formData;
+    const { fullname, email, password, phone, role } = formData;
 
-        if (!fullname || !email || !password || !phone) {
-            alert("All fields are required.");
-            return;
-        }
+    if (!fullname || !email || !password || !phone) {
+      alert("All fields are required.");
+      return;
+    }
 
         if (!validateEmail(email)) {
             alert("Please enter a valid Gmail address.");
@@ -113,27 +113,29 @@ export default function Register() {
                         </div>
                     ))}
 
-                    <div>
-                        <label className="block text-sm font-medium mb-1 text-gray-700">Role</label>
-                        <select
-                            name="role"
-                            value={formData.role}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 border rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="user">User</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                    </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              Role
+            </label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
 
-                    <button
-                        type="submit"
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
-                    >
-                        Register
-                    </button>
-                </form>
-            </div>
-        </div>
-    );
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+          >
+            Register
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }

@@ -110,4 +110,4 @@ router.get('/admin' , authorize , (req, res)=>{
 } )
 
 
-export default router ;
+export default router;
