@@ -1,11 +1,27 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Plus, Save, Upload, X, Eye, Star, Package, Tag, ImageIcon, Settings, Truck } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Plus,
+  Save,
+  Upload,
+  X,
+  Eye,
+  Star,
+  Package,
+  Tag,
+  ImageIcon,
+  Settings,
+  Truck,
+} from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { createProduct } from "../../store/slices/productSlice";
 
 export default function AddProductPage() {
-  const router = useRouter()
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.product);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -56,12 +72,18 @@ export default function AddProductPage() {
       freeShipping: false,
       shippingCost: "",
     },
-  })
+  });
 
-  const [activeTab, setActiveTab] = useState("basic")
-  const [newTag, setNewTag] = useState("")
-  const [newSpec, setNewSpec] = useState({ name: "", value: "" })
-  const [newVariant, setNewVariant] = useState({ name: "", value: "", price: "", stock: "", sku: "" })
+  const [activeTab, setActiveTab] = useState("basic");
+  const [newTag, setNewTag] = useState("");
+  const [newSpec, setNewSpec] = useState({ name: "", value: "" });
+  const [newVariant, setNewVariant] = useState({
+    name: "",
+    value: "",
+    price: "",
+    stock: "",
+    sku: "",
+  });
 
   const categories = [
     "Electronics",
@@ -74,117 +96,102 @@ export default function AddProductPage() {
     "Food",
     "Toys",
     "Health",
-  ]
+  ];
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    console.log("API URL:", process.env.NEXT_PUBLIC_API_URL)
-    console.log("Sending product data:", formData)
+    e.preventDefault();
+    console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
+    console.log("Sending product data:", formData);
 
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        console.log("Product saved successfully:", data)
-        alert("Product saved successfully!")
-        router.push("/products")
-      } else {
-        console.error("Failed to save product:", data.message || data.errors)
-        alert(`Failed to save product: ${data.message || "Unknown error"}`)
-      }
-    } catch (error) {
-      console.error("An unexpected error occurred:", error)
-      alert("An unexpected network error occurred.")
+    const result = await dispatch(createProduct(formData));
+    if (result.meta.requestStatus === "fulfilled") {
+      console.log("Product created successfully:", result.payload);
+      router.push("/add-Products");
+    } else {
+      console.error("Failed to create product:", result.error);
+      alert("Failed to create product: " + result.error.message);
     }
-  }
+  };
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target
+    const { name, value, type, checked } = e.target;
     if (name.includes(".")) {
-      const [parent, child] = name.split(".")
+      const [parent, child] = name.split(".");
       setFormData((prev) => ({
         ...prev,
         [parent]: {
           ...prev[parent],
           [child]: type === "checkbox" ? checked : value,
         },
-      }))
+      }));
     } else {
       setFormData((prev) => ({
         ...prev,
         [name]: type === "checkbox" ? checked : value,
-      }))
+      }));
     }
-  }
+  };
 
   const addTag = () => {
     if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
       setFormData((prev) => ({
         ...prev,
         tags: [...prev.tags, newTag.trim()],
-      }))
-      setNewTag("")
+      }));
+      setNewTag("");
     }
-  }
+  };
 
   const removeTag = (tagToRemove) => {
     setFormData((prev) => ({
       ...prev,
       tags: prev.tags.filter((tag) => tag !== tagToRemove),
-    }))
-  }
+    }));
+  };
 
   const addSpecification = () => {
     if (newSpec.name.trim() && newSpec.value.trim()) {
       setFormData((prev) => ({
         ...prev,
         specifications: [...prev.specifications, { ...newSpec }],
-      }))
-      setNewSpec({ name: "", value: "" })
+      }));
+      setNewSpec({ name: "", value: "" });
     }
-  }
+  };
 
   const removeSpecification = (index) => {
     setFormData((prev) => ({
       ...prev,
       specifications: prev.specifications.filter((_, i) => i !== index),
-    }))
-  }
+    }));
+  };
 
   const addVariant = () => {
     if (newVariant.name.trim() && newVariant.value.trim()) {
       setFormData((prev) => ({
         ...prev,
         variants: [...prev.variants, { ...newVariant }],
-      }))
-      setNewVariant({ name: "", value: "", price: "", stock: "", sku: "" })
+      }));
+      setNewVariant({ name: "", value: "", price: "", stock: "", sku: "" });
     }
-  }
+  };
 
   const removeVariant = (index) => {
     setFormData((prev) => ({
       ...prev,
       variants: prev.variants.filter((_, i) => i !== index),
-    }))
-  }
+    }));
+  };
 
   const tabs = [
     { id: "basic", label: "Basic Info", icon: Package },
     { id: "pricing", label: "Pricing", icon: Tag },
     { id: "inventory", label: "Inventory", icon: Package },
     { id: "media", label: "Images", icon: ImageIcon },
-    { id: "seo", label: "SEO", icon: Eye },
-    { id: "advanced", label: "Advanced", icon: Settings },
+    // { id: "seo", label: "SEO", icon: Eye },
+    // { id: "advanced", label: "Advanced", icon: Settings },
     { id: "shipping", label: "Shipping", icon: Truck },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
@@ -196,7 +203,9 @@ export default function AddProductPage() {
               <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 Add New Product
               </h1>
-              <p className="text-slate-600 mt-2">Create and manage your product catalog</p>
+              <p className="text-slate-600 mt-2">
+                Create and manage your product catalog
+              </p>
             </div>
             <div className="flex gap-3">
               <button
@@ -223,7 +232,7 @@ export default function AddProductPage() {
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-4 sticky top-6">
               <nav className="space-y-2">
                 {tabs.map((tab) => {
-                  const Icon = tab.icon
+                  const Icon = tab.icon;
                   return (
                     <button
                       key={tab.id}
@@ -237,7 +246,7 @@ export default function AddProductPage() {
                       <Icon size={20} />
                       {tab.label}
                     </button>
-                  )
+                  );
                 })}
               </nav>
             </div>
@@ -255,7 +264,9 @@ export default function AddProductPage() {
                   </h2>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="col-span-2">
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Product Name *</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Product Name *
+                      </label>
                       <input
                         type="text"
                         name="name"
@@ -267,7 +278,9 @@ export default function AddProductPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Category *</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Category *
+                      </label>
                       <select
                         name="category"
                         value={formData.category}
@@ -284,7 +297,9 @@ export default function AddProductPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Brand</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Brand
+                      </label>
                       <input
                         type="text"
                         name="brand"
@@ -295,7 +310,9 @@ export default function AddProductPage() {
                       />
                     </div>
                     <div className="col-span-2">
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Short Description</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Short Description
+                      </label>
                       <input
                         type="text"
                         name="shortDescription"
@@ -306,7 +323,9 @@ export default function AddProductPage() {
                       />
                     </div>
                     <div className="col-span-2">
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Description *</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Description *
+                      </label>
                       <textarea
                         name="description"
                         value={formData.description}
@@ -318,7 +337,9 @@ export default function AddProductPage() {
                       />
                     </div>
                     <div className="col-span-2">
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Tags</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Tags
+                      </label>
                       <div className="flex gap-2 mb-3 flex-wrap">
                         {formData.tags.map((tag, index) => (
                           <span
@@ -326,7 +347,11 @@ export default function AddProductPage() {
                             className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium"
                           >
                             {tag}
-                            <button type="button" onClick={() => removeTag(tag)} className="hover:text-indigo-900">
+                            <button
+                              type="button"
+                              onClick={() => removeTag(tag)}
+                              className="hover:text-indigo-900"
+                            >
                               <X size={14} />
                             </button>
                           </span>
@@ -337,7 +362,9 @@ export default function AddProductPage() {
                           type="text"
                           value={newTag}
                           onChange={(e) => setNewTag(e.target.value)}
-                          onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
+                          onKeyPress={(e) =>
+                            e.key === "Enter" && (e.preventDefault(), addTag())
+                          }
                           className="flex-1 px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
                           placeholder="Add tag"
                         />
@@ -363,7 +390,9 @@ export default function AddProductPage() {
                   </h2>
                   <div className="grid grid-cols-3 gap-6">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Price *</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Price *
+                      </label>
                       <input
                         type="number"
                         name="price"
@@ -376,7 +405,9 @@ export default function AddProductPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Original Price</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Original Price
+                      </label>
                       <input
                         type="number"
                         name="originalPrice"
@@ -388,7 +419,9 @@ export default function AddProductPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Cost Price</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Cost Price
+                      </label>
                       <input
                         type="number"
                         name="costPrice"
@@ -401,7 +434,9 @@ export default function AddProductPage() {
                     </div>
                   </div>
                   <div className="mt-8 p-6 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200">
-                    <h3 className="text-lg font-semibold text-slate-800 mb-4">Discount Settings</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                      Discount Settings
+                    </h3>
                     <div className="flex items-center mb-4">
                       <input
                         type="checkbox"
@@ -410,12 +445,16 @@ export default function AddProductPage() {
                         onChange={handleInputChange}
                         className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
                       />
-                      <label className="ml-2 text-sm font-medium text-slate-700">Enable Discount</label>
+                      <label className="ml-2 text-sm font-medium text-slate-700">
+                        Enable Discount
+                      </label>
                     </div>
                     {formData.discount.isActive && (
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-semibold text-slate-700 mb-2">Discount %</label>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">
+                            Discount %
+                          </label>
                           <input
                             type="number"
                             name="discount.percentage"
@@ -428,7 +467,9 @@ export default function AddProductPage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-slate-700 mb-2">Discount Amount</label>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">
+                            Discount Amount
+                          </label>
                           <input
                             type="number"
                             name="discount.amount"
@@ -440,7 +481,9 @@ export default function AddProductPage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-slate-700 mb-2">Start Date</label>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">
+                            Start Date
+                          </label>
                           <input
                             type="date"
                             name="discount.startDate"
@@ -450,7 +493,9 @@ export default function AddProductPage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-slate-700 mb-2">End Date</label>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">
+                            End Date
+                          </label>
                           <input
                             type="date"
                             name="discount.endDate"
@@ -474,7 +519,9 @@ export default function AddProductPage() {
                   </h2>
                   <div className="grid grid-cols-2 gap-6 mb-8">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Stock Quantity *</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Stock Quantity *
+                      </label>
                       <input
                         type="number"
                         name="stock.quantity"
@@ -487,7 +534,9 @@ export default function AddProductPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Low Stock Threshold</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Low Stock Threshold
+                      </label>
                       <input
                         type="number"
                         name="stock.lowStockThreshold"
@@ -508,12 +557,16 @@ export default function AddProductPage() {
                         onChange={handleInputChange}
                         className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
                       />
-                      <label className="ml-2 text-sm font-medium text-slate-700">Track Inventory</label>
+                      <label className="ml-2 text-sm font-medium text-slate-700">
+                        Track Inventory
+                      </label>
                     </div>
                   </div>
                   {/* Product Variants */}
                   <div className="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
-                    <h3 className="text-lg font-semibold text-slate-800 mb-4">Product Variants</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                      Product Variants
+                    </h3>
                     {formData.variants.length > 0 && (
                       <div className="space-y-3 mb-4">
                         {formData.variants.map((variant, index) => (
@@ -524,8 +577,12 @@ export default function AddProductPage() {
                             <span className="font-medium text-slate-700">
                               {variant.name}: {variant.value}
                             </span>
-                            <span className="text-slate-600">${variant.price}</span>
-                            <span className="text-slate-600">Stock: {variant.stock}</span>
+                            <span className="text-slate-600">
+                              ${variant.price}
+                            </span>
+                            <span className="text-slate-600">
+                              Stock: {variant.stock}
+                            </span>
                             <button
                               type="button"
                               onClick={() => removeVariant(index)}
@@ -542,21 +599,33 @@ export default function AddProductPage() {
                         type="text"
                         placeholder="Variant name (e.g., Size)"
                         value={newVariant.name}
-                        onChange={(e) => setNewVariant({ ...newVariant, name: e.target.value })}
+                        onChange={(e) =>
+                          setNewVariant({ ...newVariant, name: e.target.value })
+                        }
                         className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
                       />
                       <input
                         type="text"
                         placeholder="Value (e.g., Large)"
                         value={newVariant.value}
-                        onChange={(e) => setNewVariant({ ...newVariant, value: e.target.value })}
+                        onChange={(e) =>
+                          setNewVariant({
+                            ...newVariant,
+                            value: e.target.value,
+                          })
+                        }
                         className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
                       />
                       <input
                         type="number"
                         placeholder="Price"
                         value={newVariant.price}
-                        onChange={(e) => setNewVariant({ ...newVariant, price: e.target.value })}
+                        onChange={(e) =>
+                          setNewVariant({
+                            ...newVariant,
+                            price: e.target.value,
+                          })
+                        }
                         className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
                         step="0.01"
                       />
@@ -564,7 +633,12 @@ export default function AddProductPage() {
                         type="number"
                         placeholder="Stock"
                         value={newVariant.stock}
-                        onChange={(e) => setNewVariant({ ...newVariant, stock: e.target.value })}
+                        onChange={(e) =>
+                          setNewVariant({
+                            ...newVariant,
+                            stock: e.target.value,
+                          })
+                        }
                         className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
                       />
                       <button
@@ -588,8 +662,12 @@ export default function AddProductPage() {
                   </h2>
                   <div className="border-2 border-dashed border-slate-300 rounded-xl p-12 text-center hover:border-indigo-400 transition-all duration-300 bg-gradient-to-br from-slate-50 to-blue-50">
                     <Upload className="mx-auto text-slate-400 mb-4" size={48} />
-                    <h3 className="text-lg font-semibold text-slate-700 mb-2">Upload Product Images</h3>
-                    <p className="text-slate-500 mb-4">Drag and drop your images here, or click to browse</p>
+                    <h3 className="text-lg font-semibold text-slate-700 mb-2">
+                      Upload Product Images
+                    </h3>
+                    <p className="text-slate-500 mb-4">
+                      Drag and drop your images here, or click to browse
+                    </p>
                     <button
                       type="button"
                       className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105"
@@ -605,7 +683,7 @@ export default function AddProductPage() {
                 </div>
               )}
 
-              {/* SEO */}
+              {/* SEO
               {activeTab === "seo" && (
                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
                   <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
@@ -614,7 +692,9 @@ export default function AddProductPage() {
                   </h2>
                   <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">SEO Title</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        SEO Title
+                      </label>
                       <input
                         type="text"
                         name="seo.title"
@@ -625,7 +705,9 @@ export default function AddProductPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Meta Description</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Meta Description
+                      </label>
                       <textarea
                         name="seo.metaDescription"
                         value={formData.seo.metaDescription}
@@ -636,7 +718,9 @@ export default function AddProductPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">URL Slug</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        URL Slug
+                      </label>
                       <input
                         type="text"
                         name="seo.slug"
@@ -655,7 +739,9 @@ export default function AddProductPage() {
                           onChange={handleInputChange}
                           className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
                         />
-                        <label className="ml-2 text-sm font-medium text-slate-700">Visible to customers</label>
+                        <label className="ml-2 text-sm font-medium text-slate-700">
+                          Visible to customers
+                        </label>
                       </div>
                       <div className="flex items-center">
                         <input
@@ -672,7 +758,9 @@ export default function AddProductPage() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Status</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Status
+                      </label>
                       <select
                         name="status"
                         value={formData.status}
@@ -687,7 +775,7 @@ export default function AddProductPage() {
                     </div>
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Advanced */}
               {activeTab === "advanced" && (
@@ -698,7 +786,9 @@ export default function AddProductPage() {
                   </h2>
                   {/* Specifications */}
                   <div className="mb-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
-                    <h3 className="text-lg font-semibold text-slate-800 mb-4">Product Specifications</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                      Product Specifications
+                    </h3>
                     {formData.specifications.length > 0 && (
                       <div className="space-y-3 mb-4">
                         {formData.specifications.map((spec, index) => (
@@ -706,7 +796,9 @@ export default function AddProductPage() {
                             key={index}
                             className="flex items-center gap-4 p-4 bg-white rounded-lg border border-slate-200"
                           >
-                            <span className="font-medium text-slate-700">{spec.name}:</span>
+                            <span className="font-medium text-slate-700">
+                              {spec.name}:
+                            </span>
                             <span className="text-slate-600">{spec.value}</span>
                             <button
                               type="button"
@@ -724,14 +816,18 @@ export default function AddProductPage() {
                         type="text"
                         placeholder="Specification name"
                         value={newSpec.name}
-                        onChange={(e) => setNewSpec({ ...newSpec, name: e.target.value })}
+                        onChange={(e) =>
+                          setNewSpec({ ...newSpec, name: e.target.value })
+                        }
                         className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
                       />
                       <input
                         type="text"
                         placeholder="Value"
                         value={newSpec.value}
-                        onChange={(e) => setNewSpec({ ...newSpec, value: e.target.value })}
+                        onChange={(e) =>
+                          setNewSpec({ ...newSpec, value: e.target.value })
+                        }
                         className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
                       />
                       <button
@@ -746,7 +842,9 @@ export default function AddProductPage() {
                   {/* Dimensions & Weight */}
                   <div className="grid grid-cols-2 gap-8">
                     <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
-                      <h3 className="text-lg font-semibold text-slate-800 mb-4">Dimensions</h3>
+                      <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                        Dimensions
+                      </h3>
                       <div className="grid grid-cols-3 gap-3 mb-3">
                         <input
                           type="number"
@@ -788,7 +886,9 @@ export default function AddProductPage() {
                       </select>
                     </div>
                     <div className="p-6 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-200">
-                      <h3 className="text-lg font-semibold text-slate-800 mb-4">Weight</h3>
+                      <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                        Weight
+                      </h3>
                       <div className="space-y-3">
                         <input
                           type="number"
@@ -832,11 +932,15 @@ export default function AddProductPage() {
                         onChange={handleInputChange}
                         className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
                       />
-                      <label className="ml-2 text-sm font-medium text-slate-700">Free Shipping</label>
+                      <label className="ml-2 text-sm font-medium text-slate-700">
+                        Free Shipping
+                      </label>
                     </div>
                     {!formData.shipping.freeShipping && (
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">Shipping Cost</label>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">
+                          Shipping Cost
+                        </label>
                         <input
                           type="number"
                           name="shipping.shippingCost"
@@ -849,9 +953,13 @@ export default function AddProductPage() {
                       </div>
                     )}
                     <div className="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
-                      <h3 className="text-lg font-semibold text-slate-800 mb-4">Shipping Information</h3>
+                      <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                        Shipping Information
+                      </h3>
                       <div className="text-sm text-slate-600 space-y-2">
-                        <p>• Products will be processed within 1-2 business days</p>
+                        <p>
+                          • Products will be processed within 1-2 business days
+                        </p>
                         <p>• Standard shipping takes 3-7 business days</p>
                         <p>• Express shipping available at checkout</p>
                         <p>• Free shipping on orders over $50</p>
@@ -865,5 +973,5 @@ export default function AddProductPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

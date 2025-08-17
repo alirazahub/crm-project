@@ -4,9 +4,9 @@ import api from "../../utils/api";
 // SIGNUP
 export const signupUser = createAsyncThunk(
   "auth/signupUser",
-  async ({ name, email, password }, { rejectWithValue }) => {
+  async ({ fullname, email, password,phone ,role}, { rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/signup", { name, email, password });
+      const response = await api.post("/signup", { fullname, email, password ,phone ,role});
       return response.data.user;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Signup failed");

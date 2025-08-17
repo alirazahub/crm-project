@@ -4,9 +4,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";  
 import forgetPswdRoute from "./routes/forget-pswd.js";  
-import User from "./models/usermodel.js";   
-import Product from "./models/productModel.js";    
-import userRoutes from './routes/register.js'; // Import the user registration routes
+import userRoutes from './routes/signupRoute.js'; // Import the user registration routes
 import signInRoute from './routes/sign-in.js';
 import productRoute from './routes/product.js';
 import adminRoutes from './routes/admin.js' ;
@@ -30,8 +28,8 @@ app.get('/', (req, res) => {
 
 
 app.use('/api' ,signInRoute);
-app.use(userRoutes);
-app.use("/api/product", productRoute);
+app.use('/api',userRoutes);
+app.use('/api', productRoute);
 app.use(forgetPswdRoute);   
 app.use('/api' , adminRoutes);
 
