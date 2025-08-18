@@ -6,7 +6,7 @@ import cors from "cors";
 import forgetPswdRoute from "./routes/forget-pswd.js";  
 import userRoutes from './routes/signupRoute.js'; // Import the user registration routes
 import signInRoute from './routes/sign-in.js';
-import productRoute from './routes/product.js';
+import productRoute from './routes/productRoute.js';
 import adminRoutes from './routes/admin.js' ;
 import cookieParser from "cookie-parser";
 

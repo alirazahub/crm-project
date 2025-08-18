@@ -106,7 +106,7 @@ export default function AddProductPage() {
     const result = await dispatch(createProduct(formData));
     if (result.meta.requestStatus === "fulfilled") {
       console.log("Product created successfully:", result.payload);
-      router.push("/add-Products");
+      router.push("/display-products");
     } else {
       console.error("Failed to create product:", result.error);
       alert("Failed to create product: " + result.error.message);
@@ -210,7 +210,7 @@ export default function AddProductPage() {
             <div className="flex gap-3">
               <button
                 type="button"
-                onClick={() => router.push("/products")}
+                onClick={() => router.push("/display-products")}
                 className="px-6 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-medium transition-all duration-300 transform hover:scale-105"
               >
                 View Products

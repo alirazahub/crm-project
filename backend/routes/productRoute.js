@@ -1,5 +1,5 @@
 import express from "express";
-import Product from "../models/productModel.js";
+import Product from "../models/productmodel.js"; // Import the Product model
 const router = express.Router();
 
 // --------Creates a new product and saves it to the database
