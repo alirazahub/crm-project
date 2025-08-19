@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Plus,
@@ -15,13 +15,16 @@ import {
   Settings,
   Truck,
 } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import { createProduct } from "../../store/slices/productSlice";
 
-export default function AddProductPage() {
+// Changed to PascalCase and proper export
+export default function ProductForm({
+  initialData = null,
+  mode = "add",
+  onSubmit,
+  onCancel,
+  isLoading = false,
+}) {
   const router = useRouter();
-  const dispatch = useDispatch();
-  const { loading, error } = useSelector((state) => state.product);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -85,6 +88,13 @@ export default function AddProductPage() {
     sku: "",
   });
 
+  // Initialize form with data when in update mode
+  useEffect(() => {
+    if (mode === "update" && initialData) {
+      setFormData({ ...formData, ...initialData });
+    }
+  }, [initialData, mode]);
+
   const categories = [
     "Electronics",
     "Clothing",
@@ -98,19 +108,10 @@ export default function AddProductPage() {
     "Health",
   ];
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
-    console.log("Sending product data:", formData);
-
-    const result = await dispatch(createProduct(formData));
-    if (result.meta.requestStatus === "fulfilled") {
-      console.log("Product created successfully:", result.payload);
-      router.push("/display-products");
-    } else {
-      console.error("Failed to create product:", result.error);
-      alert("Failed to create product: " + result.error.message);
-    }
+  // This is the correct way to handle form submission inside the component
+  const handleFormSubmit = (e) => {
+    e.preventDefault(); // Prevents the default form behavior (page reload)
+    onSubmit(formData); // Calls the onSubmit prop with the current form data
   };
 
   const handleInputChange = (e) => {
@@ -188,8 +189,6 @@ export default function AddProductPage() {
     { id: "pricing", label: "Pricing", icon: Tag },
     { id: "inventory", label: "Inventory", icon: Package },
     { id: "media", label: "Images", icon: ImageIcon },
-    // { id: "seo", label: "SEO", icon: Eye },
-    // { id: "advanced", label: "Advanced", icon: Settings },
     { id: "shipping", label: "Shipping", icon: Truck },
   ];
 
@@ -201,7 +200,7 @@ export default function AddProductPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Add New Product
+                {mode === "add" ? "Add New Product" : "Edit Product"}
               </h1>
               <p className="text-slate-600 mt-2">
                 Create and manage your product catalog
@@ -210,17 +209,19 @@ export default function AddProductPage() {
             <div className="flex gap-3">
               <button
                 type="button"
-                onClick={() => router.push("/display-products")}
+                onClick={() => router.push("/admin/display-products")}
                 className="px-6 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-medium transition-all duration-300 transform hover:scale-105"
               >
                 View Products
               </button>
               <button
-                onClick={handleSubmit}
-                className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2"
+                type="submit" // The button must have type="submit" to trigger the form's onSubmit event
+                form="product-form"
+                disabled={isLoading}
+                className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2 disabled:opacity-50"
               >
                 <Save size={20} />
-                Save Product
+                {isLoading ? "Saving..." : "Save Product"}
               </button>
             </div>
           </div>
@@ -254,7 +255,11 @@ export default function AddProductPage() {
 
           {/* Main Content */}
           <div className="col-span-9">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form
+              id="product-form"
+              onSubmit={handleFormSubmit}
+              className="space-y-6"
+            >
               {/* Basic Information */}
               {activeTab === "basic" && (
                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
@@ -682,240 +687,6 @@ export default function AddProductPage() {
                   </div>
                 </div>
               )}
-
-              {/* SEO
-              {activeTab === "seo" && (
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
-                    <Eye className="text-indigo-600" />
-                    SEO & Visibility
-                  </h2>
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">
-                        SEO Title
-                      </label>
-                      <input
-                        type="text"
-                        name="seo.title"
-                        value={formData.seo.title}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                        placeholder="SEO optimized title"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">
-                        Meta Description
-                      </label>
-                      <textarea
-                        name="seo.metaDescription"
-                        value={formData.seo.metaDescription}
-                        onChange={handleInputChange}
-                        rows="3"
-                        className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50 resize-none"
-                        placeholder="Meta description for search engines"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">
-                        URL Slug
-                      </label>
-                      <input
-                        type="text"
-                        name="seo.slug"
-                        value={formData.seo.slug}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                        placeholder="product-url-slug"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name="isVisible"
-                          checked={formData.isVisible}
-                          onChange={handleInputChange}
-                          className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
-                        />
-                        <label className="ml-2 text-sm font-medium text-slate-700">
-                          Visible to customers
-                        </label>
-                      </div>
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name="isFeatured"
-                          checked={formData.isFeatured}
-                          onChange={handleInputChange}
-                          className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
-                        />
-                        <label className="ml-2 text-sm font-medium text-slate-700 flex items-center gap-1">
-                          <Star size={16} className="text-yellow-500" />
-                          Featured product
-                        </label>
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">
-                        Status
-                      </label>
-                      <select
-                        name="status"
-                        value={formData.status}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                      >
-                        <option value="draft">Draft</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                        <option value="archived">Archived</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              )} */}
-
-              {/* Advanced */}
-              {activeTab === "advanced" && (
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
-                    <Settings className="text-indigo-600" />
-                    Advanced Settings
-                  </h2>
-                  {/* Specifications */}
-                  <div className="mb-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
-                    <h3 className="text-lg font-semibold text-slate-800 mb-4">
-                      Product Specifications
-                    </h3>
-                    {formData.specifications.length > 0 && (
-                      <div className="space-y-3 mb-4">
-                        {formData.specifications.map((spec, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center gap-4 p-4 bg-white rounded-lg border border-slate-200"
-                          >
-                            <span className="font-medium text-slate-700">
-                              {spec.name}:
-                            </span>
-                            <span className="text-slate-600">{spec.value}</span>
-                            <button
-                              type="button"
-                              onClick={() => removeSpecification(index)}
-                              className="ml-auto text-red-500 hover:text-red-700"
-                            >
-                              <X size={16} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    <div className="grid grid-cols-3 gap-3">
-                      <input
-                        type="text"
-                        placeholder="Specification name"
-                        value={newSpec.name}
-                        onChange={(e) =>
-                          setNewSpec({ ...newSpec, name: e.target.value })
-                        }
-                        className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Value"
-                        value={newSpec.value}
-                        onChange={(e) =>
-                          setNewSpec({ ...newSpec, value: e.target.value })
-                        }
-                        className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                      />
-                      <button
-                        type="button"
-                        onClick={addSpecification}
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300"
-                      >
-                        <Plus size={20} />
-                      </button>
-                    </div>
-                  </div>
-                  {/* Dimensions & Weight */}
-                  <div className="grid grid-cols-2 gap-8">
-                    <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
-                      <h3 className="text-lg font-semibold text-slate-800 mb-4">
-                        Dimensions
-                      </h3>
-                      <div className="grid grid-cols-3 gap-3 mb-3">
-                        <input
-                          type="number"
-                          name="dimensions.length"
-                          value={formData.dimensions.length}
-                          onChange={handleInputChange}
-                          placeholder="Length"
-                          className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                          step="0.01"
-                        />
-                        <input
-                          type="number"
-                          name="dimensions.width"
-                          value={formData.dimensions.width}
-                          onChange={handleInputChange}
-                          placeholder="Width"
-                          className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                          step="0.01"
-                        />
-                        <input
-                          type="number"
-                          name="dimensions.height"
-                          value={formData.dimensions.height}
-                          onChange={handleInputChange}
-                          placeholder="Height"
-                          className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                          step="0.01"
-                        />
-                      </div>
-                      <select
-                        name="dimensions.unit"
-                        value={formData.dimensions.unit}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                      >
-                        <option value="cm">Centimeters</option>
-                        <option value="inch">Inches</option>
-                        <option value="m">Meters</option>
-                      </select>
-                    </div>
-                    <div className="p-6 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-200">
-                      <h3 className="text-lg font-semibold text-slate-800 mb-4">
-                        Weight
-                      </h3>
-                      <div className="space-y-3">
-                        <input
-                          type="number"
-                          name="weight.value"
-                          value={formData.weight.value}
-                          onChange={handleInputChange}
-                          placeholder="Weight"
-                          className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                          step="0.01"
-                        />
-                        <select
-                          name="weight.unit"
-                          value={formData.weight.unit}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                        >
-                          <option value="kg">Kilograms</option>
-                          <option value="g">Grams</option>
-                          <option value="lb">Pounds</option>
-                          <option value="oz">Ounces</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Shipping */}
               {activeTab === "shipping" && (
                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">

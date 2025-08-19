@@ -8,7 +8,7 @@ export const createProduct = createAsyncThunk(
   "products/createProduct",
   async (productData, { rejectWithValue }) => {
     try {
-      const { data } = await api.post("/createproduct", productData);
+      const { data } = await api.post("/createproduct", sanitizedData);
       return data;
     } catch (err) {
       return rejectWithValue(
@@ -68,7 +68,7 @@ export const updateProduct = createAsyncThunk(
   "products/updateProduct",
   async ({ id, updatedData }, { rejectWithValue }) => {
     try {
-      const { data } = await api.post(`/productlist/${id}`, updatedData);
+      const { data } = await api.put(`/productlist/${id}`, updatedData);
       return data;
     } catch (err) {
       return rejectWithValue(
