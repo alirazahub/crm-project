@@ -117,6 +117,18 @@ const productSchema = new mongoose.Schema({
         },
     }],
 
+    // SEO & Meta
+    seo: {
+        title: String,
+        metaDescription: String,
+        keywords: [String],
+        slug: {
+            type: String,
+            unique: true,
+            sparse: true
+        }
+    },
+
     // Product Specifications
     specifications: [{
         name: String,
