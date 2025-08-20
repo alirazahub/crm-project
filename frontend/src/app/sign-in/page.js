@@ -20,7 +20,7 @@ export default function signIn() {
     const result = await dispatch(loginUser(formData));
     if (result.meta.requestStatus === "fulfilled") {
       console.log(result.payload);
-      if (result.payload.role == "admin") router.replace("/dashboard");
+      if (result.payload.role == "admin") router.replace("admin/dashboard");
       else router.replace("/customer/homepage");
     }
   };
