@@ -9,6 +9,7 @@ export default function GoogleSignUp() {
   const router = useRouter();
 
   const handleGoogleSignUp = () => {
+     e.preventDefault(); 
     // This will open Google sign-in popup
     signIn("google", { callbackUrl: "/dashboard" });
   };

@@ -11,7 +11,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async signIn({ user }) {
-      console.log("✅ Google sign-in successful for:", user.email);
+      console.log("Google sign-in successful for:", user.email);
       return true; // Allow all Google sign-ins
     },
     async session({ session, token }) {

@@ -78,6 +78,8 @@ export const updateProduct = createAsyncThunk(
   }
 );
 
+
+
 // ------------------- Slice -------------------
 const productSlice = createSlice({
   name: "products",
@@ -139,8 +141,20 @@ const productSlice = createSlice({
           state.products[index] = action.payload;
         }
       });
+
+
   },
 });
 
 export const { clearSelectedProduct } = productSlice.actions;
 export default productSlice.reducer;
+
+
+
+/*
+RULES
+1)Initial state (the default data).
+2)Reducers (synchronous functions that change state).
+3)Async logic (optional) — like fetching from API.
+*/
+

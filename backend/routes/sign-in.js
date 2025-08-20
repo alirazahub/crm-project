@@ -19,6 +19,7 @@ const generateToken = (id , role) => {
 };
 
 router.post('/sign-in', async (req , res)=>{
+    console.log(" inside simple sign in route Login request body:", req.body);
     try{
     const { email , password } = req.body ;
 
@@ -41,6 +42,7 @@ router.post('/sign-in', async (req , res)=>{
 
     res.json({ 
       success: true,
+       token,
       user: { role: user.role , name: user.fullname, email: user.email } 
     });
 }catch(err){
@@ -51,8 +53,11 @@ router.post('/sign-in', async (req , res)=>{
 });
 
 router.post("/google-sign-in", async (req, res) => {
+      console.log(' entered google sign in route' , err) ;
+
   try {
     const { name, email, image } = req.body;
+    console.log('fetch name email image from body in google signup route' , err) ;
 
     // Check if user already exists
     let user = await User.findOne({ email });
@@ -84,6 +89,7 @@ router.post("/google-sign-in", async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Google sign-in successful",
+     token, 
       user: {
         id: user._id,
         name: user.fullname,

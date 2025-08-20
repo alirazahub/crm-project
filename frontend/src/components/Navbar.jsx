@@ -1,23 +1,29 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
-import { ShoppingCart, Menu, X, User, LogOut } from 'lucide-react';
-import { useSession, signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import Link from "next/link";
+import { useState } from "react";
+import { ShoppingCart, Menu, X, User, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
+import { logoutUser } from "@/store/slices/authSlice"; // adjust path if needed
 
 export default function Navbar() {
+  
   const [isOpen, setIsOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const { data: session } = useSession();
   const router = useRouter();
-  
+  const dispatch = useDispatch();
+
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleProfileMenu = () => setShowProfileMenu(!showProfileMenu);
 
-  const handleLogout = async () => {
-    await signOut({ redirect: false });
-    router.push('/sign-in');
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    dispatch(logoutUser());
+    router.push("/sign-in");
   };
 
   return (
@@ -42,24 +48,24 @@ export default function Navbar() {
                 0
               </span>
             </Link>
-            
+
             {/* Profile and Logout Buttons */}
-            {session?.user ? (
+            {isAuthenticated ? (
               <div className="relative">
                 <button
                   onClick={toggleProfileMenu}
                   className="flex items-center space-x-2 text-gray-700 hover:text-black focus:outline-none"
                 >
                   <User className="h-5 w-5" />
-                  <span>{session.user.name || 'Profile'}</span>
+                  <span>{user?.fullname || "Profile"}</span>
                 </button>
-                
+
                 {/* Profile Dropdown */}
                 {showProfileMenu && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                     <div className="px-4 py-2 text-sm text-gray-700 border-b">
-                      <p className="font-medium">{session.user.name}</p>
-                      <p className="text-gray-500">{session.user.email}</p>
+                      <p className="font-medium">{user?.fullname}</p>
+                      <p className="text-gray-500">{user?.email}</p>
                     </div>
                     <button
                       onClick={handleLogout}
@@ -83,7 +89,7 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-2">
-            {session?.user && (
+            {isAuthenticated && (
               <button
                 onClick={handleLogout}
                 className="text-red-600 hover:text-red-800 p-2"
@@ -106,13 +112,13 @@ export default function Navbar() {
           <Link href="/products" className="block text-gray-700 hover:text-black">Products</Link>
           <Link href="/contact" className="block text-gray-700 hover:text-black">Contact</Link>
           <Link href="/cart" className="block text-gray-700 hover:text-black">Cart</Link>
-          
+
           {/* Mobile Profile Info */}
-          {session?.user && (
+          {isAuthenticated && (
             <>
               <div className="border-t pt-2 mt-2">
-                <p className="text-sm font-medium text-gray-700">{session.user.name}</p>
-                <p className="text-xs text-gray-500">{session.user.email}</p>
+                <p className="text-sm font-medium text-gray-700">{user?.fullname}</p>
+                <p className="text-xs text-gray-500">{user?.email}</p>
               </div>
               <button
                 onClick={handleLogout}

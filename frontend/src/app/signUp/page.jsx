@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import GoogleSignUp from "../../components/GoogleSignUp";
+//import GoogleSignUp from "../../components/GoogleSignUp";
 import { signupUser } from "@/store/slices/authSlice";
 import { useDispatch, useSelector  } from "react-redux";
 
@@ -71,8 +71,8 @@ export default function Register() {
           Create an Account
         </h2>
 
-        {/* Google Sign Up Button */}
-        <GoogleSignUp />
+        {/* Google Sign Up Button 
+        <GoogleSignUp />*/}
 
         {/* Divider */}
         <div className="relative my-6">

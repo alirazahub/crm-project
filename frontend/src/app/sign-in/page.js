@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import GoogleSignUp from "../../components/GoogleSignUp";
+//import GoogleSignUp from "../../components/GoogleSignUp";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../store/slices/authSlice";
 
@@ -13,17 +13,26 @@ export default function signIn() {
   const [formData, setFormData] = useState({ email: "", password: "" });
 
   const handleChange = (e) => {
+      e.preventDefault();
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     const result = await dispatch(loginUser(formData));
+    console.log("Login Result:", result);
+
     if (result.meta.requestStatus === "fulfilled") {
-      console.log(result.payload);
-      if (result.payload.role == "admin") router.replace("/dashboard");
-      else router.replace("/customer/homepage");
+      const role = result.payload.user?.role;  
+      console.log("User Role:", role);
+
+      if (role === "admin") {
+        router.replace("/dashboard");
+      } else if (role === "user") {
+        router.replace("/customer/homepage");
+      }
     }
   };
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-50 to-indigo-100">
@@ -32,8 +41,8 @@ export default function signIn() {
           Sign In
         </h2>
 
-        {/* Google Sign In Button */}
-        <GoogleSignUp />
+        {/* Google Sign In Button 
+        <GoogleSignUp />*/}
 
         {/* Divider */}
         <div className="relative my-6">
@@ -55,6 +64,7 @@ export default function signIn() {
             <input
               type="email"
               name="email"
+              suppressHydrationWarning
               onChange={handleChange}
               required
               className="w-full px-4 py-2 border rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -68,6 +78,7 @@ export default function signIn() {
             <input
               type="password"
               name="password"
+                suppressHydrationWarning
               onChange={handleChange}
               required
               className="w-full px-4 py-2 border rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"

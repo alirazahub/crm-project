@@ -1,9 +1,12 @@
 import express from "express";
-import Product from "../models/productmodel.js"; // Import the Product model
+import Product from "../models/productModel.js";
+import authorize from "../middleware/authorization.js";
+
 const router = express.Router();
 
+
 // --------Creates a new product and saves it to the database
-router.post("/createproduct", async (req, res) => {
+router.post("/createproduct",authorize, async (req, res) => {
   try {
     const newProduct = new Product(req.body);
     const savedProduct = await newProduct.save();
@@ -47,7 +50,7 @@ router.get("/productlist/:id", async (req, res) => {
   }
 });
 //delete by id
-router.delete("/productlist/:id", async (req, res) => {
+router.delete("/productlist/:id", authorize,async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
     if (!product) {
@@ -61,7 +64,7 @@ router.delete("/productlist/:id", async (req, res) => {
 });
 
 //edit product by id
-router.post("/productlist/:id", async (req, res) => {
+router.post("/productlist/:id",authorize, async (req, res) => {
   const { name, description, category, brand, price } = req.body;
   const id = req.params.id;
   try {

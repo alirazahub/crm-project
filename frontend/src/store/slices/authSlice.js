@@ -20,7 +20,15 @@ export const loginUser = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const response = await api.post("/sign-in", { email, password });
-      return response.data.user;
+      
+      // Save token for persistence
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+
+      return {
+        user: response.data.user,
+        token: response.data.token
+      };
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Login failed");
     }
@@ -89,34 +97,22 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload;
-        state.isAuthenticated = true;
-        state.isInitialized = true;
-      })
+.addCase(loginUser.fulfilled, (state, action) => {
+  state.loading = false;
+  state.user = action.payload.user;
+  state.token = action.payload.token;
+  state.isAuthenticated = true;
+})
+
+
+
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         state.isInitialized = true;
       })
 
-      // FETCH USER
-      .addCase(fetchCurrentUser.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload;
-        state.isAuthenticated = true;
-        state.isInitialized = true;
-      })
-      .addCase(fetchCurrentUser.rejected, (state) => {
-        state.loading = false;
-        state.user = null;
-        state.isAuthenticated = false;
-        state.isInitialized = true;
-      })
+     
 
       // LOGOUT
       .addCase(logoutUser.fulfilled, (state) => {
