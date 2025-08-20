@@ -63,29 +63,21 @@ router.delete("/productlist/:id", authorize,async (req, res) => {
   }
 });
 
-//edit product by id
-router.post("/productlist/:id",authorize, async (req, res) => {
-  const { name, description, category, brand, price } = req.body;
-  const id = req.params.id;
+// edit product by id
+router.put("/productlist/:id", async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(
-      id,
-      {
-        name,
-        description,
-        category,
-        brand,
-        price,
-      },
-      { new: true }
-    );
-    console.log(product);
+    const product = await Product.findById(req.params.id);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
+
+    product.set(req.body); // ✅ safely applies fields
+    await product.save(); // ✅ actually persists changes
+
     res.status(200).json(product);
   } catch (error) {
-    res.status(500).json({ message: "error at fetching product" });
+    console.error("Error updating product:", error.message);
+    res.status(500).json({ message: "Error updating product" });
   }
 });
 
