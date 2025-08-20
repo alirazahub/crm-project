@@ -8,13 +8,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "@/store/slices/authSlice"; // adjust path if needed
 
 export default function Navbar() {
-  
   const [isOpen, setIsOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
 
   const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const { totalQuantity } = useSelector((state) => state.cart); // ✅ get cart count
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleProfileMenu = () => setShowProfileMenu(!showProfileMenu);
@@ -42,11 +42,15 @@ export default function Navbar() {
             <Link href="/" className="text-gray-700 hover:text-black">Home</Link>
             <Link href="/products" className="text-gray-700 hover:text-black">Products</Link>
             <Link href="/contact" className="text-gray-700 hover:text-black">Contact</Link>
+            
+            {/* Cart */}
             <Link href="/cart" className="relative">
               <ShoppingCart className="h-5 w-5 text-gray-700 hover:text-black" />
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-                0
-              </span>
+              {totalQuantity > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                  {totalQuantity}
+                </span>
+              )}
             </Link>
 
             {/* Profile and Logout Buttons */}
@@ -111,7 +115,9 @@ export default function Navbar() {
           <Link href="/" className="block text-gray-700 hover:text-black">Home</Link>
           <Link href="/products" className="block text-gray-700 hover:text-black">Products</Link>
           <Link href="/contact" className="block text-gray-700 hover:text-black">Contact</Link>
-          <Link href="/cart" className="block text-gray-700 hover:text-black">Cart</Link>
+          <Link href="/cart" className="block text-gray-700 hover:text-black">
+            Cart ({totalQuantity})
+          </Link>
 
           {/* Mobile Profile Info */}
           {isAuthenticated && (
