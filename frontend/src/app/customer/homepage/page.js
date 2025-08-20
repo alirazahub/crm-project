@@ -3,7 +3,7 @@
 import HeroSection from '@/components/HeroSection';
 import Navbar from '../../../components/Navbar';
 import UserProducts from '@/components/UserProduct';
-
+import Cart from '@/components/Cart';
 import { useSession } from 'next-auth/react';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
@@ -39,6 +39,7 @@ export default function HomePage() {
       <Navbar />
       <HeroSection />
       <UserProducts />
+      <Cart/>
     
     </>
   );

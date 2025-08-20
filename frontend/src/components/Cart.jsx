@@ -2,9 +2,12 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, removeFromCart, clearCart } from "@/store/slices/cartSlice";
+import { useRouter } from "next/navigation";
+
 
 export default function Cart() {
   const dispatch = useDispatch();
+    const router = useRouter();
   const { cart, totalQuantity, totalPrice } = useSelector((state) => state.cart);
 
   return (
@@ -55,6 +58,14 @@ export default function Cart() {
               className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-700 text-white font-semibold rounded-xl shadow-md hover:opacity-90 transition"
             >
               Clear Cart
+            </button>
+        {/* Checkout Button */}
+
+             <button
+             onClick={() => router.push("/customer/checkout")}  
+              className="px-6 py-3 bg-green-600 text-white font-semibold rounded-xl shadow-md hover:bg-green-700 transition"
+            >
+              Proceed to Checkout
             </button>
           </div>
         )}

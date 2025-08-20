@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../store/slices/authSlice";
 import { Eye, EyeOff } from "lucide-react"; // 👈 eye icons
-
+import { fetchCart } from "../../store/slices/cartSlice"; 
 export default function SignIn() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -24,6 +24,7 @@ export default function SignIn() {
     console.log("Login Result:", result);
 
     if (result.meta.requestStatus === "fulfilled") {
+        await dispatch(fetchCart());
       const role = result.payload.user?.role;
       console.log("User Role:", role);
 
