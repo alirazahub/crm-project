@@ -4,7 +4,7 @@ import { store } from "../store";
 import AuthProvider from "../components/AuthProvider";
 import "./globals.css";
 import Providers from "@/components/Providers";
-import Navbar from "@/components/Navbar";
+
 
 
 export const metadata = {
@@ -17,7 +17,6 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <Providers>
-          <Navbar />
           {children}
         </Providers>
       </body>

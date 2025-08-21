@@ -63,8 +63,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { useSelector, useDispatch } from "react-redux";
+import Profile from "@/components/Profile";
 
 export default function Dashboard() {
+  
   const [theme, setTheme] = useState("dark");
   const [ordersReceived, setOrdersReceived] = useState(356);
   const [averageSales, setAverageSales] = useState(5680);
@@ -72,6 +75,8 @@ export default function Dashboard() {
   const [pendingOrders, setPendingOrders] = useState(580);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  console.log(user , isAuthenticated) ;
 
   const canvasRef = useRef(null);
   const router = useRouter();
@@ -83,6 +88,13 @@ export default function Dashboard() {
     }, 2000);
 
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if(!isAuthenticated)
+      router.replace('/sign-in') ;
+    else if(user.role != 'admin')
+      router.replace('/customer/homepage')
   }, []);
 
   // Update time
@@ -297,15 +309,7 @@ export default function Dashboard() {
                 </Tooltip>
               </TooltipProvider>
 
-              <Avatar>
-                <AvatarImage
-                  src="/placeholder.svg?height=40&width=40"
-                  alt="Admin"
-                />
-                <AvatarFallback className="bg-slate-700 text-cyan-500">
-                  EA
-                </AvatarFallback>
-              </Avatar>
+              <Profile user={user} />
             </div>
           </div>
         </header>
