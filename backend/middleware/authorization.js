@@ -3,8 +3,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/usermodel.js";
 
 const authorize = async (req, res, next) => {
-// let token;
-  const token = req.cookies?.token; 
+  let token = req.cookies?.token; 
   // Check for token in Authorization header or cookies
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];

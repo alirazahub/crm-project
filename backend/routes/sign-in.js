@@ -3,6 +3,7 @@ import User  from '../models/usermodel.js' ;
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import authorize  from '../middleware/authorization.js';
+import { protect } from '../middleware/authMiddleware.js';
 dotenv.config();
 
 
@@ -114,6 +115,16 @@ router.get('/admin' , authorize , (req, res)=>{
          message: "Welcome Admin!"
     }) ;
 } )
+
+router.post('/auth/logout' , (req , res)=>{
+  res.clearCookie('token');
+  res.status(200).json({ message: "Logged out successfully" });
+})
+
+router.get('/auth/me', protect , (req, res)=>{
+  console.log(req.user) ;
+  res.json(req.user);
+});
 
 
 export default router;

@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import { signOut, auth } from "@/auth";
 import { cookies } from "next/headers";
@@ -31,7 +32,7 @@ export default async function Dashboard() {
         {/* Dashboard Action Buttons */}
         <div className="space-y-4 mb-6">
           <Link
-            href="/add-Products"
+            href="/admin/createProducts"
             className="block w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition duration-200"
           >
             Add Product
@@ -52,7 +53,7 @@ export default async function Dashboard() {
           </Link>
 
           <Link
-            href="/display-products"
+            href="admin/display-products"
             className="block w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded transition duration-200"
           >
             Display Product
@@ -60,23 +61,7 @@ export default async function Dashboard() {
 
         </div>
 
-        {/* Sign Out Button */}
-        <form
-          action={async () => {
-            "use server";
-            const cookieStore = await cookies();
-            cookieStore.delete("session");
-            cookieStore.delete("token") ;
-            await signOut({ redirectTo: "/" });
-          }}
-        >
-          <button
-            type="submit"
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition duration-200"
-          >
-            Sign Out
-          </button>
-        </form>
+        
       </div>
     </div>
   );

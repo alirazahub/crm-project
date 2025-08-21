@@ -14,6 +14,7 @@ export default function Navbar() {
   const dispatch = useDispatch();
 
   const { user, isAuthenticated } = useSelector((state) => state.auth);
+  console.log(user , isAuthenticated) ;
   const { totalQuantity } = useSelector((state) => state.cart); // ✅ get cart count
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -23,7 +24,7 @@ export default function Navbar() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     dispatch(logoutUser());
-    router.push("/sign-in");
+    router.push("/customer/homepage");
   };
 
   return (
@@ -43,8 +44,8 @@ export default function Navbar() {
             <Link href="/products" className="text-gray-700 hover:text-black">Products</Link>
             <Link href="/contact" className="text-gray-700 hover:text-black">Contact</Link>
             
-            {/* Cart */}
-            <Link href="/cart" className="relative">
+            { isAuthenticated && user.role === 'user' && (
+              <Link href="/cart" className="relative">
               <ShoppingCart className="h-5 w-5 text-gray-700 hover:text-black" />
               {totalQuantity > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
@@ -52,6 +53,8 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
+            )
+            }
 
             {/* Profile and Logout Buttons */}
             {isAuthenticated ? (

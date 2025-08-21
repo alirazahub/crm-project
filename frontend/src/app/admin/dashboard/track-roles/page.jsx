@@ -4,6 +4,7 @@ import api from "@/utils/api";
 export default async function TrackRoles() {
   const cookieStore = await cookies();
   const token = cookieStore.get("token").value;
+  console.log(token) ;
 
   const res = await api.get("/track-roles", {
     headers: {

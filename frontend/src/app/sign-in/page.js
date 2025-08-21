@@ -28,7 +28,7 @@ export default function SignIn() {
       console.log("User Role:", role);
 
       if (role === "admin") {
-        router.replace("/dashboard");
+        router.replace("/admin/dashboard");
       } else if (role === "user") {
         router.replace("/customer/homepage");
       }

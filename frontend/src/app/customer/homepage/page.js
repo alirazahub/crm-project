@@ -15,10 +15,11 @@ export default function HomePage() {
   const router = useRouter();
   const [checked, setChecked] = useState(false);
 
-  useEffect(() => {
+  /*useEffect(() => {
     // Only check once loading is done
     if (!loading && status !== 'loading') {
       if (!isAuthenticated && status === 'unauthenticated') {
+        console.log('rerouting to sign in ') ;
         router.replace("/sign-in"); // replace prevents back button issues
       } else {
         setChecked(true); // allow rendering
@@ -32,11 +33,11 @@ export default function HomePage() {
         <div className="text-xl">Loading...</div>
       </div>
     );
-  }
+  }*/
 
   return (
     <>
-      <Navbar />
+      
       <HeroSection />
       <UserProducts />
     
