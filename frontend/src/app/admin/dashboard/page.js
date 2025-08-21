@@ -341,7 +341,7 @@ export default function Dashboard() {
                   <NavItem
                     icon={ShoppingBag}
                     label="Orders"
-                    link="/admin/orders" // Add this route as needed
+                    link="/admin/sales/orders" // Add this route as needed
                   />
                   <NavItem
                     icon={Users}
