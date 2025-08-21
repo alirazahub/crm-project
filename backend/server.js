@@ -10,6 +10,10 @@ import productRoute from './routes/productRoute.js';
 import adminRoutes from './routes/admin.js' ;
 import cookieParser from "cookie-parser";
 import cart from './routes/cart.js';
+import orderRoutes from "./routes/orderRoute.js";
+
+
+
 
 dotenv.config();
 const app = express();
@@ -33,6 +37,7 @@ app.use('/api', productRoute);
 app.use(forgetPswdRoute);   
 app.use('/api' , adminRoutes);
 app.use('/api/cart' , cart);
+app.use("/api/orders", orderRoutes);
 
 
 mongoose.connect(process.env.MONGO_URI)

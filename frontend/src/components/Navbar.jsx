@@ -5,7 +5,8 @@ import { useState } from "react";
 import { ShoppingCart, Menu, X, User, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
-import { logoutUser } from "@/store/slices/authSlice"; // adjust path if needed
+import { logoutUser } from "@/store/slices/authSlice"; 
+
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -45,7 +46,7 @@ export default function Navbar() {
             <Link href="/contact" className="text-gray-700 hover:text-black">Contact</Link>
             
             { isAuthenticated && user.role === 'user' && (
-              <Link href="/cart" className="relative">
+              <Link href="/customer/cart" className="relative">
               <ShoppingCart className="h-5 w-5 text-gray-700 hover:text-black" />
               {totalQuantity > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
@@ -118,7 +119,7 @@ export default function Navbar() {
           <Link href="/" className="block text-gray-700 hover:text-black">Home</Link>
           <Link href="/products" className="block text-gray-700 hover:text-black">Products</Link>
           <Link href="/contact" className="block text-gray-700 hover:text-black">Contact</Link>
-          <Link href="/cart" className="block text-gray-700 hover:text-black">
+          <Link href="/customer/cart" className="block text-gray-700 hover:text-black">
             Cart ({totalQuantity})
           </Link>
 
