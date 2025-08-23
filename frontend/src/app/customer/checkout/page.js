@@ -2,11 +2,12 @@
 import { useSelector, useDispatch } from "react-redux";
 import { placeOrder, resetOrderState, fetchMyOrder } from "@/store/slices/orderSlice";
 import { useState, useEffect } from "react";
+import { removeFromCart } from "@/store/slices/cartSlice";
 
 export default function CheckoutPage() {
   const dispatch = useDispatch();
   const { cart, totalQuantity, totalPrice } = useSelector((state) => state.cart);
-  const { currentOrder, status, successMessage, error } = useSelector((state) => state.order);
+  const { currentOrder, status, successMessage, error , buyNowProduct} = useSelector((state) => state.order);
 
   const [form, setForm] = useState({
     fullName: "",
@@ -16,37 +17,65 @@ export default function CheckoutPage() {
     phone: ""
   });
 
+
+
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-/*
+
 const handleCheckout = (e) => {
   e.preventDefault();
 
-  dispatch(placeOrder({
-    shippingDetails: form,
-    items: cart.map((item) => ({
-      product: item.product._id || item.product, // ensure you send product id
-      quantity: item.quantity,
-      priceAtAddition: item.product.price, // optional, but useful
-    })),
-    totalPrice
-  }));
-};*/
-const handleCheckout = (e) => {
-  e.preventDefault();
-  dispatch(placeOrder({ shippingDetails: form }));
-};
-
-
-
-  useEffect(() => {
-    dispatch(fetchMyOrder());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (successMessage) {
-      setTimeout(() => dispatch(resetOrderState()), 3000);
+ 
+    if (buyNowProduct) {
+      // ✅ Place order for single product
+      dispatch(
+        placeOrder({
+          items: [{ productId: buyNowProduct._id, quantity: 1 }],
+          shippingDetails: form,
+          
+        })
+      );
+    } else {
+      // ✅ Place order for all cart items
+      dispatch(
+        placeOrder({
+          items: cart.map((item) => ({
+            productId: item.product._id,
+            quantity: item.quantity,
+          })),
+          shippingDetails: form,
+        })
+      );
     }
-  }, [successMessage, dispatch]);
+  };
+
+
+// After successful order:
+
+useEffect(() => {
+  if (successMessage) {
+    if (buyNowProduct) {
+      // ✅ Remove only the Buy Now product
+      dispatch(removeFromCart(buyNowProduct._id));
+    } else {
+      // ✅ Remove all cart items
+      cart.forEach((item) => {
+        dispatch(removeFromCart(item.product ? item.product._id : item._id));
+      });
+    }
+
+    // Reset order state after a delay
+    setTimeout(() => dispatch(resetOrderState()), 3000);
+  }
+}, [successMessage, dispatch, buyNowProduct, cart]);
+
+
+   // ✅ Decide what to show
+  const checkoutItems = buyNowProduct ? [buyNowProduct] : cart;
+  const checkoutTotal = buyNowProduct
+    ? buyNowProduct.price * 1
+    : totalPrice;
+  const checkoutQuantity = buyNowProduct ? 1 : totalQuantity;
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -56,18 +85,27 @@ const handleCheckout = (e) => {
         <div className="bg-white shadow-lg rounded-2xl p-6">
           <h2 className="text-2xl font-bold border-b pb-3">Order Summary</h2>
           <ul className="divide-y mt-4">
-            {cart.map((item) => (
-              <li key={item.product._id} className="py-3 flex justify-between">
-                <span>{item.product.name} × {item.quantity}</span>
-                <span>${(item.product.price * item.quantity).toFixed(2)}</span>
+            {checkoutItems.map((item) => (
+              <li key={item.product ? item.product._id : item._id} className="py-3 flex justify-between">
+                <span>
+                  {item.product ? item.product.name : item.name} × {item.quantity || 1}
+                </span>
+                <span>
+                  $
+                  {(
+                    (item.product ? item.product.price : item.price) *
+                    (item.quantity || 1)
+                  ).toFixed(2)}
+                </span>
               </li>
             ))}
           </ul>
           <div className="flex justify-between font-semibold text-lg mt-4 border-t pt-3">
-            <span>Total ({totalQuantity} items)</span>
-            <span>${totalPrice.toFixed(2)}</span>
+            <span>Total ({checkoutQuantity} items)</span>
+            <span>${checkoutTotal.toFixed(2)}</span>
           </div>
         </div>
+
 
         {/* Checkout Form */}
         <div className="bg-white shadow-lg rounded-2xl p-6">

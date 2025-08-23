@@ -15,7 +15,7 @@ import storage from "redux-persist/lib/storage"; // defaults to localStorage
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth"], // only these slices will be persisted
+  whitelist: ["auth"], // Only the auth slice will be saved (persisted) in storage.
 };
 
 // 2. Combine reducers
@@ -28,7 +28,7 @@ const rootReducer = combineReducers({
 
 // 3. Wrap root reducer with persistReducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);
-
+//key inside localStorage where redux-persist will save the data.
 export const store = configureStore({
   reducer: persistedReducer ,
   middleware: (getDefaultMiddleware) =>

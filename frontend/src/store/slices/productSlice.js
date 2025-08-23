@@ -8,7 +8,9 @@ export const createProduct = createAsyncThunk(
   "products/createProduct",
   async (productData, { rejectWithValue }) => {
     try {
-      const { data } = await api.post("/createproduct", sanitizedData);
+    //  const { data } = await api.post("/createproduct", sanitizedData);
+    const { data } = await api.post("/createproduct", productData);
+
       return data;
     } catch (err) {
       return rejectWithValue(
@@ -88,11 +90,15 @@ const productSlice = createSlice({
     selectedProduct: null,
     loading: false,
     error: null,
+   
   },
   reducers: {
     clearSelectedProduct: (state) => {
       state.selectedProduct = null;
     },
+     setSelectedProduct: (state, action) => {
+    state.selectedProduct = action.payload;
+  },
   },
   extraReducers: (builder) => {
     builder
@@ -146,7 +152,7 @@ const productSlice = createSlice({
   },
 });
 
-export const { clearSelectedProduct } = productSlice.actions;
+export const { clearSelectedProduct, setSelectedProduct } = productSlice.actions;
 export default productSlice.reducer;
 
 

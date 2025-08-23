@@ -3,11 +3,10 @@
 import HeroSection from '@/components/HeroSection';
 import Navbar from '../../../components/Navbar';
 import UserProducts from '@/components/UserProduct';
-import Cart from '@/components/Cart';
 import { useSession } from 'next-auth/react';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export default function HomePage() {
   const { data: session, status } = useSession();
@@ -40,8 +39,8 @@ export default function HomePage() {
       
       <HeroSection />
       <UserProducts />
-      <Cart/>
     
+
     </>
   );
 }
