@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 export default function Cart() {
   const dispatch = useDispatch();
     const router = useRouter();
+
+
   const { cart, totalQuantity, totalPrice } = useSelector((state) => state.cart);
 
   return (

@@ -3,15 +3,40 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../utils/api";
 import axios from "axios";
 
+export const createOrder = createAsyncThunk(
+  "order/createOrder",
+  async (orderData, { getState, rejectWithValue }) => {
+    try {
+      const { auth } = getState();
+      const token = auth.token;
+
+      const response = await axios.post(
+        "http://localhost:5000/api/orders",
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 export const placeOrder = createAsyncThunk(
   "order/placeOrder",
-  async (orderData, { rejectWithValue }) => {
+  async (orderData, { dispatch, rejectWithValue }) => {
     try {
-     // store/slices/orderSlice.js
-const { data } = await api.post("/orders", orderData, {
-  withCredentials: true,
-});
- await dispatch(clearCart());
+      const { data } = await api.post("/orders", orderData, {
+        withCredentials: true,
+      });
+
+      // ✅ clear cart after successful order
+      dispatch({ type: "cart/clearCart" });
 
       return data;
     } catch (error) {
@@ -21,6 +46,7 @@ const { data } = await api.post("/orders", orderData, {
     }
   }
 );
+
 
 
 // Fetch latest order
@@ -44,6 +70,7 @@ const orderSlice = createSlice({
     status: "idle",      // idle | loading | succeeded | failed
     error: null,
     successMessage: null,
+    buyNowProduct: null,
   },
   reducers: {
     resetOrderState: (state) => {
@@ -51,6 +78,10 @@ const orderSlice = createSlice({
       state.successMessage = null;
       state.error = null;
       state.status = "idle";
+       state.buyNowProduct = null;
+    },
+     setBuyNowProduct: (state, action) => {
+      state.buyNowProduct = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -86,5 +117,5 @@ const orderSlice = createSlice({
   },
 });
 
-export const { resetOrderState } = orderSlice.actions;
+export const { resetOrderState, setBuyNowProduct } = orderSlice.actions;
 export default orderSlice.reducer;

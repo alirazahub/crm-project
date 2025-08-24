@@ -147,11 +147,15 @@ const productSlice = createSlice({
     selectedProduct: null,
     loading: false,
     error: null,
+   
   },
   reducers: {
     clearSelectedProduct: (state) => {
       state.selectedProduct = null;
     },
+     setSelectedProduct: (state, action) => {
+    state.selectedProduct = action.payload;
+  },
   },
   extraReducers: (builder) => {
     builder
@@ -205,7 +209,7 @@ const productSlice = createSlice({
   },
 });
 
-export const { clearSelectedProduct } = productSlice.actions;
+export const { clearSelectedProduct, setSelectedProduct } = productSlice.actions;
 export default productSlice.reducer;
 
 

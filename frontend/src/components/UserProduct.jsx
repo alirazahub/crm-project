@@ -5,10 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { fetchProducts } from "@/store/slices/productSlice";
 import { addToCart } from "@/store/slices/cartSlice";
+import { setBuyNowProduct } from "@/store/slices/orderSlice";
 
 export default function UserProducts() {
   const { products, loading, error } = useSelector((state) => state.product);
-  const { user, token } = useSelector((state) => state.auth); // ✅ use Redux auth
+  const { token } = useSelector((state) => state.auth); // ✅ use Redux auth
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -18,12 +19,11 @@ export default function UserProducts() {
   }, [dispatch]);
 
   const handleAddToCart = (product) => {
-    if (!token) {  // ✅ check Redux token instead of NextAuth
+    if (!token) {
       alert("Please login to add items to your cart.");
       return;
     }
 
-    console.log("Adding to cart:", product);
 
     dispatch(
       addToCart({
@@ -33,11 +33,23 @@ export default function UserProducts() {
     );
   };
 
-  const handleShopNow = (productId) => {
-    router.push(`/product/${productId}`);
-  };
 
-  // UI states
+ 
+
+const handleBuyNow = (product) => {
+  if (!token) {
+    alert("Please login to continue.");
+    return;
+  }
+  // ✅ Add product to cart first
+  dispatch(addToCart({ productId: product._id, quantity: 1 }));
+
+  // ✅ Then redirect to checkout
+  router.push("/customer/checkout");
+};
+
+
+
   if (loading) {
     return <p className="text-gray-500 text-lg p-8">Loading products...</p>;
   }
@@ -64,14 +76,16 @@ export default function UserProducts() {
         Shop Our Products
       </h1>
 
+      {/* ✅ product loop */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {products.map((product) => (
           <div
             key={product._id}
-            className="bg-white rounded-lg shadow-md border border-gray-200 p-6 flex flex-col justify-between hover:shadow-lg transition"
+            onClick={() => router.push(`/customer/products/${product._id}`)}
+            className="cursor-pointer bg-white rounded-lg shadow-md border border-gray-200 p-6 flex flex-col justify-between hover:shadow-lg hover:scale-[1.02] transition transform"
           >
-            <div>
-              {/* ✅ Show image if available */}
+            {/* Content that doesn’t interfere with click */}
+            <div onClick={(e) => e.stopPropagation()}>
               {product.image && (
                 <img
                   src={product.image}
@@ -85,40 +99,35 @@ export default function UserProducts() {
               </h2>
 
               <p className="text-sm text-gray-600 mb-1">
-                <span className="font-medium">Category:</span>{" "}
-                {product.category || "N/A"}
-              </p>
-
-              <p className="text-sm text-gray-600 mb-1">
                 <span className="font-medium">Price:</span> $
-                {typeof product.price === "number"
-                  ? product.price.toFixed(2)
-                  : "0.00"}
+                {product.price?.toFixed(2)}
               </p>
 
               <p className="text-sm text-gray-600 mb-4">
-                <span className="font-medium">Description:</span>{" "}
                 {product.description
-                  ? product.description.length > 100
-                    ? product.description.slice(0, 100) + "..."
-                    : product.description
+                  ? product.description.slice(0, 100) + "..."
                   : "No description"}
               </p>
             </div>
 
-            <div className="flex gap-4 mt-4">
+            {/* ✅ Buttons won’t trigger navigation */}
+            <div
+              className="flex gap-4 mt-4"
+              onClick={(e) => e.stopPropagation()} // stop card click
+            >
               <button
                 onClick={() => handleAddToCart(product)}
                 className="flex-grow bg-green-600 hover:bg-green-700 text-white rounded-md py-2 font-semibold transition"
               >
                 Add to Cart
               </button>
-              <button
-                onClick={() => handleShopNow(product._id)}
-                className="flex-grow bg-blue-600 hover:bg-blue-700 text-white rounded-md py-2 font-semibold transition"
-              >
-                Buy Now
-              </button>
+             <button
+          onClick={()=>handleBuyNow(product)}
+          
+          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+        >
+          Buy Now
+        </button>
             </div>
           </div>
         ))}
