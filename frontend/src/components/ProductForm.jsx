@@ -27,66 +27,36 @@ export default function ProductForm({
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    shortDescription: "",
-    category: "",
-    subcategory: "",
-    brand: "",
-    tags: [],
-    price: "",
-    originalPrice: "",
-    costPrice: "",
-    discount: {
-      percentage: "",
-      amount: "",
-      startDate: "",
-      endDate: "",
-      isActive: false,
-    },
-    stock: {
-      quantity: "",
-      lowStockThreshold: 10,
-      trackInventory: true,
-    },
-    variants: [],
-    images: [],
-    seo: {
-      title: "",
-      metaDescription: "",
-      keywords: [],
-      slug: "",
-    },
-    specifications: [],
-    dimensions: {
-      length: "",
-      width: "",
-      height: "",
-      unit: "cm",
-    },
-    weight: {
-      value: "",
-      unit: "kg",
-    },
-    status: "draft",
-    isVisible: true,
-    isFeatured: false,
-    shipping: {
-      freeShipping: false,
-      shippingCost: "",
-    },
-  });
+  name: "",
+  description: "",
+  shortDescription: "",
+  category: "",
+  subcategory: "",
+  brand: "",
+  tags: [],
+  price: "",
+  originalPrice: "",
+  costPrice: "",
+  discount: {
+    percentage: "",
+    amount: "",
+    startDate: "",
+    endDate: "",
+    isActive: false,
+  },
+  stock: {
+    quantity: "",
+    lowStockThreshold: 10,
+    trackInventory: true,
+  },
+  images: [],  
+  status: "draft",
+  isFeatured: false,
+});
 
   const [activeTab, setActiveTab] = useState("basic");
   const [newTag, setNewTag] = useState("");
-  const [newSpec, setNewSpec] = useState({ name: "", value: "" });
-  const [newVariant, setNewVariant] = useState({
-    name: "",
-    value: "",
-    price: "",
-    stock: "",
-    sku: "",
-  });
+  
 
   // Initialize form with data when in update mode
   useEffect(() => {
@@ -150,39 +120,23 @@ export default function ProductForm({
     }));
   };
 
-  const addSpecification = () => {
-    if (newSpec.name.trim() && newSpec.value.trim()) {
-      setFormData((prev) => ({
-        ...prev,
-        specifications: [...prev.specifications, { ...newSpec }],
-      }));
-      setNewSpec({ name: "", value: "" });
-    }
-  };
 
-  const removeSpecification = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      specifications: prev.specifications.filter((_, i) => i !== index),
-    }));
-  };
 
-  const addVariant = () => {
-    if (newVariant.name.trim() && newVariant.value.trim()) {
-      setFormData((prev) => ({
-        ...prev,
-        variants: [...prev.variants, { ...newVariant }],
-      }));
-      setNewVariant({ name: "", value: "", price: "", stock: "", sku: "" });
-    }
-  };
+  const handleImageChange = (e) => {
+  const files = Array.from(e.target.files); // convert FileList → Array
+  setFormData((prev) => ({
+    ...prev,
+    images: [...prev.images, ...files], // append new images
+  }));
+};
 
-  const removeVariant = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      variants: prev.variants.filter((_, i) => i !== index),
-    }));
-  };
+const removeImage = (index) => {
+  setFormData((prev) => ({
+    ...prev,
+    images: prev.images.filter((_, i) => i !== index),
+  }));
+};
+
 
   const tabs = [
     { id: "basic", label: "Basic Info", icon: Package },
@@ -567,178 +521,74 @@ export default function ProductForm({
                       </label>
                     </div>
                   </div>
-                  {/* Product Variants */}
-                  <div className="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
-                    <h3 className="text-lg font-semibold text-slate-800 mb-4">
-                      Product Variants
-                    </h3>
-                    {formData.variants.length > 0 && (
-                      <div className="space-y-3 mb-4">
-                        {formData.variants.map((variant, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center gap-4 p-4 bg-white rounded-lg border border-slate-200"
-                          >
-                            <span className="font-medium text-slate-700">
-                              {variant.name}: {variant.value}
-                            </span>
-                            <span className="text-slate-600">
-                              ${variant.price}
-                            </span>
-                            <span className="text-slate-600">
-                              Stock: {variant.stock}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => removeVariant(index)}
-                              className="ml-auto text-red-500 hover:text-red-700"
-                            >
-                              <X size={16} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    <div className="grid grid-cols-5 gap-3">
-                      <input
-                        type="text"
-                        placeholder="Variant name (e.g., Size)"
-                        value={newVariant.name}
-                        onChange={(e) =>
-                          setNewVariant({ ...newVariant, name: e.target.value })
-                        }
-                        className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Value (e.g., Large)"
-                        value={newVariant.value}
-                        onChange={(e) =>
-                          setNewVariant({
-                            ...newVariant,
-                            value: e.target.value,
-                          })
-                        }
-                        className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                      />
-                      <input
-                        type="number"
-                        placeholder="Price"
-                        value={newVariant.price}
-                        onChange={(e) =>
-                          setNewVariant({
-                            ...newVariant,
-                            price: e.target.value,
-                          })
-                        }
-                        className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                        step="0.01"
-                      />
-                      <input
-                        type="number"
-                        placeholder="Stock"
-                        value={newVariant.stock}
-                        onChange={(e) =>
-                          setNewVariant({
-                            ...newVariant,
-                            stock: e.target.value,
-                          })
-                        }
-                        className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                      />
-                      <button
-                        type="button"
-                        onClick={addVariant}
-                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-300"
-                      >
-                        <Plus size={20} />
-                      </button>
-                    </div>
-                  </div>
+                  
                 </div>
               )}
 
-              {/* Media/Images */}
               {activeTab === "media" && (
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
-                    <ImageIcon className="text-indigo-600" />
-                    Product Images
-                  </h2>
-                  <div className="border-2 border-dashed border-slate-300 rounded-xl p-12 text-center hover:border-indigo-400 transition-all duration-300 bg-gradient-to-br from-slate-50 to-blue-50">
-                    <Upload className="mx-auto text-slate-400 mb-4" size={48} />
-                    <h3 className="text-lg font-semibold text-slate-700 mb-2">
-                      Upload Product Images
-                    </h3>
-                    <p className="text-slate-500 mb-4">
-                      Drag and drop your images here, or click to browse
-                    </p>
-                    <button
-                      type="button"
-                      className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105"
-                    >
-                      Choose Files
-                    </button>
-                  </div>
-                  <div className="mt-6 text-sm text-slate-600">
-                    <p>• Recommended size: 1200x1200 pixels</p>
-                    <p>• Supported formats: JPG, PNG, WebP</p>
-                    <p>• Maximum file size: 5MB per image</p>
-                  </div>
-                </div>
-              )}
-              {/* Shipping */}
-              {activeTab === "shipping" && (
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
-                    <Truck className="text-indigo-600" />
-                    Shipping Settings
-                  </h2>
-                  <div className="space-y-6">
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        name="shipping.freeShipping"
-                        checked={formData.shipping.freeShipping}
-                        onChange={handleInputChange}
-                        className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
-                      />
-                      <label className="ml-2 text-sm font-medium text-slate-700">
-                        Free Shipping
-                      </label>
-                    </div>
-                    {!formData.shipping.freeShipping && (
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                          Shipping Cost
-                        </label>
-                        <input
-                          type="number"
-                          name="shipping.shippingCost"
-                          value={formData.shipping.shippingCost}
-                          onChange={handleInputChange}
-                          className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 bg-white/50"
-                          placeholder="0.00"
-                          step="0.01"
-                        />
-                      </div>
-                    )}
-                    <div className="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
-                      <h3 className="text-lg font-semibold text-slate-800 mb-4">
-                        Shipping Information
-                      </h3>
-                      <div className="text-sm text-slate-600 space-y-2">
-                        <p>
-                          • Products will be processed within 1-2 business days
-                        </p>
-                        <p>• Standard shipping takes 3-7 business days</p>
-                        <p>• Express shipping available at checkout</p>
-                        <p>• Free shipping on orders over $50</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+    <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
+      <ImageIcon className="text-indigo-600" />
+      Product Images
+    </h2>
+
+    {/* File Input */}
+    <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-indigo-400 transition-all duration-300 bg-gradient-to-br from-slate-50 to-blue-50">
+      <Upload className="mx-auto text-slate-400 mb-4" size={48} />
+      <h3 className="text-lg font-semibold text-slate-700 mb-2">
+        Upload Product Images
+      </h3>
+      <p className="text-slate-500 mb-4">
+        Drag and drop or select multiple images
+      </p>
+      <input
+        type="file"
+        multiple
+        onChange={handleImageChange}
+        className="hidden"
+        id="imageUpload"
+      />
+      <label
+        htmlFor="imageUpload"
+        className="cursor-pointer px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all duration-300 inline-block"
+      >
+        Choose Files
+      </label>
+    </div>
+
+    {/* Preview Selected Images */}
+    {formData.images.length > 0 && (
+      <div className="mt-6 grid grid-cols-4 gap-4">
+        {formData.images.map((file, index) => (
+          <div
+            key={index}
+            className="relative border rounded-lg overflow-hidden group"
+          >
+            <img
+              src={typeof file === "string" ? file : URL.createObjectURL(file)}
+              alt="preview"
+              className="w-full h-32 object-cover"
+            />
+            <button
+              type="button"
+              onClick={() => removeImage(index)}
+              className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-80 hover:opacity-100"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <div className="mt-6 text-sm text-slate-600">
+      <p>• Recommended size: 1200x1200 pixels</p>
+      <p>• Supported formats: JPG, PNG, WebP</p>
+      <p>• Maximum file size: 5MB per image</p>
+    </div>
+  </div>
+)}
+
             </form>
           </div>
         </div>

@@ -8,15 +8,47 @@ export const createProduct = createAsyncThunk(
   "products/createProduct",
   async (productData, { rejectWithValue }) => {
     try {
-      const { data } = await api.post("/createproduct", sanitizedData);
-      return data;
+      const formData = new FormData();
+
+      for (const key in productData) {
+        const value = productData[key];
+
+        if (key === "images") {
+          // Append images properly
+          if (Array.isArray(value)) {
+            value.forEach((file) => {
+              if (file instanceof File) {
+                formData.append("images", file);
+              }
+            });
+          }
+        } else if (typeof value === "object" && value !== null) {
+          // Stringify only objects/arrays
+          formData.append(key, JSON.stringify(value));
+        } else if (value !== undefined && value !== null) {
+          // Primitive values
+          formData.append(key, value);
+        }
+      }
+
+      const res = await fetch("http://localhost:5000/api/createproduct", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        return rejectWithValue(errorData);
+      }
+
+      return await res.json();
     } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to create product"
-      );
+      return rejectWithValue({ message: err.message });
     }
   }
 );
+
+
 
 // GET ALL PRODUCTS
 export const fetchProducts = createAsyncThunk(
@@ -68,7 +100,34 @@ export const updateProduct = createAsyncThunk(
   "products/updateProduct",
   async ({ id, updatedData }, { rejectWithValue }) => {
     try {
-      const { data } = await api.put(`/productlist/${id}`, updatedData);
+      const formData = new FormData();
+
+      for (const key in updatedData) {
+        const value = updatedData[key];
+
+        if (key === "images") {
+  if (Array.isArray(value)) {
+    value.forEach((file) => {
+      if (file instanceof File) {
+        // New file upload
+        formData.append("images", file);
+      } else if (typeof file === "string") {
+        // Existing image URL, send separately
+        formData.append("existingImages", file);
+      }
+    });
+  }
+}
+ else if (typeof value === "object" && value !== null) {
+          // Stringify only objects/arrays
+          formData.append(key, JSON.stringify(value));
+        } else if (value !== undefined && value !== null) {
+          // Primitive values
+          formData.append(key, value);
+        }
+      }
+
+      const { data } = await api.put(`/productlist/${id}`, formData);
       return data;
     } catch (err) {
       return rejectWithValue(

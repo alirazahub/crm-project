@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
+import DisplayImg from "@/components/view-images";
 import {
   Plus,
   Search,
@@ -125,11 +126,7 @@ export default function ProductsPage() {
       {/* Product Image */}
       <div className="relative h-48 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
         {product.images && product.images.length > 0 ? (
-          <img
-            src={product.images[0]}
-            alt={product.name}
-            className="w-full h-full object-cover"
-          />
+          <DisplayImg imgs={product.images} />
         ) : (
           <ImageIcon size={48} className="text-slate-400" />
         )}
