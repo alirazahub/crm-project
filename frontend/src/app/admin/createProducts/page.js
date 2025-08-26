@@ -17,7 +17,7 @@ export default function AddProductPage() {
     const result = await dispatch(createProduct(formData));
     if (result.meta.requestStatus === "fulfilled") {
       console.log("Product created successfully:", result.payload);
-      router.push("/admin/createProducts");
+      router.push("/admin/display-products");
     } else {
       console.error("Failed to create product:", result.error);
       alert("Failed to create product: " + result.error.message);
@@ -25,7 +25,7 @@ export default function AddProductPage() {
   };
 
   const handleCancel = () => {
-    router.push("/display-products");
+    router.push("/admin/display-products");
   };
 
   return (

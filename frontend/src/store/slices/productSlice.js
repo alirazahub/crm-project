@@ -31,17 +31,19 @@ export const createProduct = createAsyncThunk(
         }
       }
 
-      const res = await fetch("http://localhost:5000/api/createproduct", {
+      //fetch doesnt send cookies by defualt 
+      /*const res = await fetch("http://localhost:5000/api/createproduct", {
         method: "POST",
         body: formData,
-      });
+      });*/
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        return rejectWithValue(errorData);
-      }
+      const res = await api.post("/createproduct", formData) ;
 
-      return await res.json();
+      //if error occurs backend error will be caught in catch block
+      //error is already in json 
+      //return await res.json();
+
+      return res.data ;
     } catch (err) {
       return rejectWithValue({ message: err.message });
     }

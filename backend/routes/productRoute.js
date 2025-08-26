@@ -30,35 +30,87 @@ function safeParseObject(value, fallback = {}) {
 
 router.post("/createproduct", authorize, handleMulterErrors, async (req, res) => {
   try {
-    console.log("Incoming product data:", req.body);
+    // Fields that might come as JSON strings
+    const fieldsToParse = ["discount", "stock", "ratings", "tags"];
 
-    // Parse fields back to correct types
+    fieldsToParse.forEach((field) => {
+      if (req.body[field]) {
+        try {
+          req.body[field] = JSON.parse(req.body[field]);
+        } catch (err) {
+          // leave as-is if parsing fails
+        }
+      }
+    });
+
+    // Handle images
+    const uploadedImages = req.files?.map((file) => file.path) || [];
     const productData = {
       ...req.body,
-      tags: safeParseArray(req.body.tags),
-  discount: safeParseObject(req.body.discount, {}),
-  stock: safeParseObject(req.body.stock, {}),
-
-      price: req.body.price ? Number(req.body.price) : 0,
-      originalPrice: req.body.originalPrice ? Number(req.body.originalPrice) : 0,
-      costPrice: req.body.costPrice ? Number(req.body.costPrice) : 0,
-
-      isFeatured: req.body.isFeatured === "true",
-
-      images: req.files?.map((file) => file.path) || [],
+      images: uploadedImages.length > 0 ? uploadedImages : [],
     };
 
-    console.log("Final parsed productData:", productData);
+    // Convert numeric fields (force to number or null)
+    ["price", "originalPrice", "costPrice"].forEach((numField) => {
+      if (productData[numField] !== undefined && productData[numField] !== null) {
+        const val = Number(productData[numField]);
+        productData[numField] = isNaN(val) ? null : val;
+      }
+    });
 
+    // Convert stock.quantity
+    if (productData.stock?.quantity !== undefined) {
+      const qty = Number(productData.stock.quantity);
+      productData.stock.quantity = isNaN(qty) ? null : qty;
+    }
+
+    // Convert discount fields
+    if (productData.discount) {
+      ["percentage", "amount"].forEach((field) => {
+        const val = Number(productData.discount[field]);
+        productData.discount[field] =
+          productData.discount[field] === "" || isNaN(val) ? null : val;
+      });
+
+      ["startDate", "endDate"].forEach((field) => {
+        productData.discount[field] =
+          !productData.discount[field] || productData.discount[field] === ""
+            ? null
+            : new Date(productData.discount[field]);
+      });
+    }
+
+    // Booleans
+    if (productData.isFeatured !== undefined) {
+      productData.isFeatured =
+        productData.isFeatured === "true" || productData.isFeatured === true;
+    }
+
+    // Null cleanup for any leftover empty strings
+    Object.keys(productData).forEach((key) => {
+      if (
+        productData[key] === "null" ||
+        productData[key] === "undefined" ||
+        productData[key] === ""
+      ) {
+        productData[key] = null;
+      }
+    });
+
+    console.log("Final product data to save:", productData);
     const newProduct = new Product(productData);
     const savedProduct = await newProduct.save();
 
-    res.status(201).json(savedProduct);
+    res.status(200).json(savedProduct);
   } catch (error) {
-    console.error("Error saving product:", error);
-    res.status(500).json({ message: "Server error occurred while saving the product." });
+    console.error("Error saving product:", error.message);
+    res
+      .status(500)
+      .json({ message: "Server error occurred while saving the product." });
   }
 });
+
+
 
 
 //get all

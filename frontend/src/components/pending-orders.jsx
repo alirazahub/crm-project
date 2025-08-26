@@ -24,17 +24,19 @@ export default function PendingOrders() {
 
 
   const handleStatusChange = async (orderId) => {
-    try {
-      await api.put(`/update-order-status/${orderId}`, {
-        status: "shipped"
-      });
-
-      fetchOrders() ;
-
-    } catch (error) {
+  try {
+    await api.put(`/update-order-status/${orderId}`, { status: "shipped" });
+    fetchOrders();
+  } catch (error) {
+    // If backend sent 400 error with { error: "message" }
+    if (error.response?.data?.error) {
+      alert(error.response.data.error); // or show toast
+    } else {
       console.error("Failed to update status:", error);
     }
-  };
+  }
+};
+
 
   return (
     <div className="p-6 max-w-6xl mx-auto">

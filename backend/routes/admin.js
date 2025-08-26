@@ -69,23 +69,51 @@ router.put('/update-order-status/:orderId', authorize, async (req, res) => {
   const { orderId } = req.params;
   const { status } = req.body;
 
+  console.log('Update order status endpoint hit', status);
+
   try {
     // Check if order exists
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId).populate('items.product');
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
     }
 
-    // Update the status
+    if (status === 'shipped') {
+      // Loop with `for...of` to allow early return
+      for (const item of order.items) {
+        if (item.quantity > item.product.stock.quantity) {
+          return res.status(400).json({ 
+            error: `Insufficient stock for product ${item.product.name}` 
+          });
+        }
+
+        // Deduct from stock
+        item.product.stock.quantity -= item.quantity;
+        item.product.stock.sold += item.quantity;
+        await item.product.save();
+        console.log('Updated stock for product', item.product.name);
+      }
+    } 
+    else if (status === 'cancelled') {
+      for (const item of order.items) {
+        item.product.stock.quantity += item.quantity;
+        item.product.stock.sold -= item.quantity;
+        await item.product.save();
+      }
+    }
+
+    // Update order status
     order.status = status || order.status;
     await order.save();
 
     res.status(200).json({ message: 'Order status updated successfully', order });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to update order status' });
   }
 });
+
 
 router.get('/get-dispatched-orders' ,authorize , async (req, res)=>{
   try {

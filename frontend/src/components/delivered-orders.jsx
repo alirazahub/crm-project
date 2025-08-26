@@ -38,10 +38,10 @@ export default function PendingOrders() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Pending Orders</h1>
+      <h1 className="text-3xl font-bold mb-6">Delivered/Dispatched Orders</h1>
       
       {orders.length === 0 ? (
-        <p className="text-gray-600">No pending orders found.</p>
+        <p className="text-gray-600">No orders found.</p>
       ) : (
         orders.map((order) => (
           <div key={order._id} className="bg-white shadow-md rounded-lg p-6 mb-6 border">

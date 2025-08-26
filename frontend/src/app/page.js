@@ -1,33 +1,27 @@
-// app/page.js
-"use client";
-
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchCurrentUser } from "../store/slices/authSlice";
-import { useRouter } from "next/navigation";
+'use client';
+import HeroSection from '@/components/HeroSection';
+import UserProducts from '@/components/UserProduct';
+import Navbar from '@/components/Navbar';
+import { useSelector } from 'react-redux';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function HomePage() {
-  const dispatch = useDispatch();
   const router = useRouter();
-  const { user, loading, isAuthenticated, isInitialized } = useSelector((state) => state.auth);
-
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  
+  //admin get redirected to dashboard if cache contains admin role
   useEffect(() => {
-    if (isInitialized) {
-      if (isAuthenticated) {
-        router.push("customer/homepage");
-      } else {
-        router.push("/login");
-      }
+    if (isAuthenticated && user?.role === 'admin') {
+      router.push('/admin/dashboard');
     }
-  }, [isInitialized, isAuthenticated, router]);
+  }, [isAuthenticated, user, router]); // ✅ Add dependencies
 
-  if (!isInitialized || loading) {
-    return (
-      <main style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-        <p>HomePage</p>
-      </main>
-    );
-  }
-
-  return null; // Will redirect based on auth status
+  return (
+    <>
+      <Navbar />
+      <HeroSection />
+      <UserProducts />
+    </>
+  );
 }
