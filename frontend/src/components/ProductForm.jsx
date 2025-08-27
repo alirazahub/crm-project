@@ -53,32 +53,7 @@ export default function ProductForm({
   status: "draft",
   isFeatured: false,
 });
-  name: "",
-  description: "",
-  shortDescription: "",
-  category: "",
-  subcategory: "",
-  brand: "",
-  tags: [],
-  price: "",
-  originalPrice: "",
-  costPrice: "",
-  discount: {
-    percentage: "",
-    amount: "",
-    startDate: "",
-    endDate: "",
-    isActive: false,
-  },
-  stock: {
-    quantity: "",
-    lowStockThreshold: 10,
-    trackInventory: true,
-  },
-  images: [],  
-  status: "draft",
-  isFeatured: false,
-});
+
 
   const [activeTab, setActiveTab] = useState("basic");
   const [newTag, setNewTag] = useState("");
@@ -145,16 +120,6 @@ export default function ProductForm({
       tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }));
   };
-
-
-
-  const handleImageChange = (e) => {
-  const files = Array.from(e.target.files); // convert FileList → Array
-  setFormData((prev) => ({
-    ...prev,
-    images: [...prev.images, ...files], // append new images
-  }));
-};
 
 
   const handleImageChange = (e) => {
@@ -686,7 +651,7 @@ const removeImage = (index) => {
       <p>• Maximum file size: 5MB per image</p>
     </div>
   </div>
-)}
+
 
             </form>
           </div>
