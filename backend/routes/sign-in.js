@@ -2,7 +2,7 @@ import express from 'express' ;
 import User  from '../models/usermodel.js' ;
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import authorize  from '../middleware/authorization.js';
+import {authorize}  from '../middleware/authorization.js';
 import { protect } from '../middleware/authMiddleware.js';
 dotenv.config();
 

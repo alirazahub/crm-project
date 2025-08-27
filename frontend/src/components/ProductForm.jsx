@@ -53,6 +53,32 @@ export default function ProductForm({
   status: "draft",
   isFeatured: false,
 });
+  name: "",
+  description: "",
+  shortDescription: "",
+  category: "",
+  subcategory: "",
+  brand: "",
+  tags: [],
+  price: "",
+  originalPrice: "",
+  costPrice: "",
+  discount: {
+    percentage: "",
+    amount: "",
+    startDate: "",
+    endDate: "",
+    isActive: false,
+  },
+  stock: {
+    quantity: "",
+    lowStockThreshold: 10,
+    trackInventory: true,
+  },
+  images: [],  
+  status: "draft",
+  isFeatured: false,
+});
 
   const [activeTab, setActiveTab] = useState("basic");
   const [newTag, setNewTag] = useState("");
@@ -130,6 +156,15 @@ export default function ProductForm({
   }));
 };
 
+
+  const handleImageChange = (e) => {
+  const files = Array.from(e.target.files); // convert FileList → Array
+  setFormData((prev) => ({
+    ...prev,
+    images: [...prev.images, ...files], // append new images
+  }));
+};
+
 const removeImage = (index) => {
   setFormData((prev) => ({
     ...prev,
@@ -143,7 +178,7 @@ const removeImage = (index) => {
     { id: "pricing", label: "Pricing", icon: Tag },
     { id: "inventory", label: "Inventory", icon: Package },
     { id: "media", label: "Images", icon: ImageIcon },
-    
+    // 
   ];
 
   return (
@@ -522,10 +557,74 @@ const removeImage = (index) => {
                     </div>
                   </div>
                   
+                  
                 </div>
               )}
 
               {activeTab === "media" && (
+  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+    <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
+      <ImageIcon className="text-indigo-600" />
+      Product Images
+    </h2>
+
+    {/* File Input */}
+    <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-indigo-400 transition-all duration-300 bg-gradient-to-br from-slate-50 to-blue-50">
+      <Upload className="mx-auto text-slate-400 mb-4" size={48} />
+      <h3 className="text-lg font-semibold text-slate-700 mb-2">
+        Upload Product Images
+      </h3>
+      <p className="text-slate-500 mb-4">
+        Drag and drop or select multiple images
+      </p>
+      <input
+        type="file"
+        multiple
+        onChange={handleImageChange}
+        className="hidden"
+        id="imageUpload"
+      />
+      <label
+        htmlFor="imageUpload"
+        className="cursor-pointer px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all duration-300 inline-block"
+      >
+        Choose Files
+      </label>
+    </div>
+
+    {/* Preview Selected Images */}
+    {formData.images.length > 0 && (
+      <div className="mt-6 grid grid-cols-4 gap-4">
+        {formData.images.map((file, index) => (
+          <div
+            key={index}
+            className="relative border rounded-lg overflow-hidden group"
+          >
+            <img
+              src={typeof file === "string" ? file : URL.createObjectURL(file)}
+              alt="preview"
+              className="w-full h-32 object-cover"
+            />
+            <button
+              type="button"
+              onClick={() => removeImage(index)}
+              className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-80 hover:opacity-100"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <div className="mt-6 text-sm text-slate-600">
+      <p>• Recommended size: 1200x1200 pixels</p>
+      <p>• Supported formats: JPG, PNG, WebP</p>
+      <p>• Maximum file size: 5MB per image</p>
+    </div>
+  </div>
+)}
+
   <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
     <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
       <ImageIcon className="text-indigo-600" />
