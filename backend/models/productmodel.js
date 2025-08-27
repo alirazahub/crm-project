@@ -1,4 +1,3 @@
-// models/Product.js
 import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema({
@@ -151,8 +150,10 @@ const productSchema = new mongoose.Schema({
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
-});
+  }
+);
 
+// ✅ Fix: use existing model if already compiled
+const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 
-const product = mongoose.model('Product', productSchema);
-export default product;
+export default Product;
