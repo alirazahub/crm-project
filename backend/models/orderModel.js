@@ -35,9 +35,10 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       required: true
     },
+    //added received status for stock confirmation from admin side
     status: {
       type: String,
-      enum: ["pending", "paid", "shipped", "delivered", "cancelled"],
+      enum: ["pending", "paid", "shipped", "delivered", "cancelled" , "received"],
       default: "pending"
     }
   },

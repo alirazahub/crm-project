@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import authorize  from '../middleware/authorization.js';
 import Order from '../models/orderModel.js';
+import product from '../models/productModel.js';
 dotenv.config();
 
 const router = express.Router() ;
@@ -73,7 +74,7 @@ router.put('/update-order-status/:orderId', authorize, async (req, res) => {
 
   try {
     // Check if order exists
-    const order = await Order.findById(orderId).populate('items.product');
+    const order = await Order.findById(orderId).populate('items.product' , 'stock name');
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
     }
@@ -93,7 +94,14 @@ router.put('/update-order-status/:orderId', authorize, async (req, res) => {
         await item.product.save();
         console.log('Updated stock for product', item.product.name);
       }
-    } 
+    }
+    else if( status === 'received') {
+      console.log('Marking order as received, restocking items');
+      for (const item of order.items) {
+        item.product.stock.quantity += item.quantity;
+        await item.product.save();
+      }
+    }
     else if (status === 'cancelled') {
       for (const item of order.items) {
         item.product.stock.quantity += item.quantity;
@@ -121,6 +129,41 @@ router.get('/get-dispatched-orders' ,authorize , async (req, res)=>{
     res.status(200).json(orders); 
   } catch (error) {
     res.status(500).json({ error: 'Failed to retrieve pending orders.' });
+  }
+})
+
+router.post('/place-stock-order' , authorize , async (req, res)=>{
+  try {
+    const { productId , quantity , price } = req.body ;
+    console.log('placing stock order' , productId , quantity , price) ;
+    
+    // Create new order
+    const order = new Order({
+      user: req.user._id,
+      items: {
+        product: productId ,
+        quantity: quantity ,
+        price: price
+      },
+      totalPrice: 0, // Assuming stock orders don't have a price
+      shippingDetails: {
+        fullName: req.user.fullname || 'Admin',
+        address: 'ebazar factory',
+        city: 'lahore',
+        postalCode: '54000',
+        phone: '0000000000'
+      }
+    });
+
+    await order.save();
+
+    return res.status(200).json({
+      message: 'Stock order placed successfully',
+      order
+    })
+  } catch (err) {
+    console.error('Error placing stock order:', err);
+    res.status(500).json({ error: 'Failed to place stock order' });
   }
 })
 

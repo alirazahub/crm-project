@@ -64,11 +64,32 @@ if (freshCart) {
 // Get logged-in user's latest order
 router.get("/my-orders", protect, async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
-    res.json(orders[0]); // send latest order
+    if (req.user.role === "admin" || req.user.role === "sales") {
+      const orders = await Order.find({
+        status: "pending", // only pending orders
+      })
+        .populate("user", "name email role")
+        .populate("items.product", "name price");
+
+      // filter out orders where populated user is not admin/sales
+      const filteredOrders = orders.filter(
+        (o) => o.user && ["admin", "sales"].includes(o.user.role)
+      );
+
+      return res.json(filteredOrders);
+    }
+
+    // For normal user → return their latest order
+    const orders = await Order.find({ user: req.user._id })
+      .sort({ createdAt: -1 })
+      .limit(1)
+      .populate("items.product", "name price");
+
+    res.json(orders[0] || null);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch orders", error });
   }
 });
+
 
 export default router;

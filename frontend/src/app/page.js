@@ -15,7 +15,8 @@ export default function HomePage() {
     if (isAuthenticated && user?.role === 'admin') {
       router.push('/admin/dashboard');
     }
-  }, [isAuthenticated, user, router]); // ✅ Add dependencies
+    //extra dependencies triggered re renders 
+  }, [isAuthenticated]); // ✅ Add dependencies
 
   return (
     <>

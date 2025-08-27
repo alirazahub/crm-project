@@ -122,7 +122,7 @@ const authSlice = createSlice({
         state.isInitialized = true;
       })
 
-      .addCase(fetchCurrentUser.fulfilled, (action , state) => {
+      .addCase(fetchCurrentUser.fulfilled, ( state, action) => {
         state.loading = false;
         console.log(action) ;
   state.user = action.payload.user;
