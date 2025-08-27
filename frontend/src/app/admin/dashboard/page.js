@@ -288,7 +288,7 @@ export default function Dashboard() {
                     link="/admin/customers"
                   />
                   <NavItem icon={Star} label="Reviews" link="/admin/reviews" />
-                  <NavItem icon={Tag} label="Coupons" link="/admin/coupons" />
+                  <NavItem icon={Tag} label="Inventory" link="/admin/sales/inventory" />
                   <NavItem icon={FileText} label="Pages" link="/admin/pages" />
                   <NavItem
                     icon={Settings}
