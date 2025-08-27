@@ -1,6 +1,6 @@
 import express from "express";
 import Product from "../models/productModel.js";
-import authorize from "../middleware/authorization.js";
+import {authorize} from "../middleware/authorization.js";
 
 const router = express.Router();
 

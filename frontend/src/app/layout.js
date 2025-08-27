@@ -3,8 +3,8 @@ import { Provider } from "react-redux";
 import { store } from "../store";
 import AuthProvider from "../components/AuthProvider";
 import "./globals.css";
-import Providers from "@/components/Providers";
-import Navbar from "@/components/Navbar";
+import Providers from "../components/Providers";
+import Navbar from "../components/Navbar";
 
 
 export const metadata = {

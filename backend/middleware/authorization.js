@@ -1,8 +1,7 @@
-
 import jwt from "jsonwebtoken";
 import User from "../models/usermodel.js";
 
-const authorize = async (req, res, next) => {
+export const authorize = async (req, res, next) => {
   let token = req.cookies?.token; 
   // Check for token in Authorization header or cookies
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -44,5 +43,3 @@ const authorize = async (req, res, next) => {
     res.status(403).json({ message: "Access denied" });
   }
 };
-
-export default authorize ;

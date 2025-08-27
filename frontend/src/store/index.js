@@ -1,15 +1,19 @@
-
-import { configureStore , combineReducers } from "@reduxjs/toolkit";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
 import productReducer from "./slices/productSlice";
 import cartReducer from "./slices/cartSlice";
 import orderReducer from "./slices/orderSlice";
-
+import feedbackReducer from "./slices/feedbackSlice";
 import { persistReducer, persistStore } from "redux-persist";
-import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
+import {
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage
-
-
 
 // 1. Configure persist
 const persistConfig = {
@@ -24,13 +28,14 @@ const rootReducer = combineReducers({
   product: productReducer,
   cart: cartReducer,
   order: orderReducer,
+  feedback: feedbackReducer,
 });
 
 // 3. Wrap root reducer with persistReducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: persistedReducer ,
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
@@ -38,9 +43,7 @@ export const store = configureStore({
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }),
-
 });
 
 // 5. Create persistor
 export const persistor = persistStore(store);
-

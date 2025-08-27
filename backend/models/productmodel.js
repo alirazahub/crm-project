@@ -97,64 +97,13 @@ const productSchema = new mongoose.Schema({
         }
     },
 
-    // Product Variants (Size, Color, etc.)
-    variants: [{
-        name: String, // e.g., "Size", "Color"
-        value: String, // e.g., "Large", "Red"
-        price: Number,
-        stock: Number,
-        sku: String
-    }],
 
     // Images
     images: [{
-        url: {
             type: String,
-            isPrimary: {
-                type: Boolean,
-                default: false
-            }
-        },
     }],
 
-    // SEO & Meta
-    seo: {
-        title: String,
-        metaDescription: String,
-        keywords: [String],
-        slug: {
-            type: String,
-            unique: true,
-            sparse: true
-        }
-    },
 
-    // Product Specifications
-    specifications: [{
-        name: String,
-        value: String
-    }],
-
-    // Dimensions & Weight
-    dimensions: {
-        length: Number,
-        width: Number,
-        height: Number,
-        unit: {
-            type: String,
-            enum: ['cm', 'inch', 'm'],
-            default: 'cm'
-        }
-    },
-
-    weight: {
-        value: Number,
-        unit: {
-            type: String,
-            enum: ['kg', 'g', 'lb', 'oz'],
-            default: 'kg'
-        }
-    },
 
     // Status & Visibility
     status: {
@@ -163,32 +112,10 @@ const productSchema = new mongoose.Schema({
         default: 'draft'
     },
 
-    isVisible: {
-        type: Boolean,
-        default: true
-    },
 
     isFeatured: {
         type: Boolean,
         default: false
-    },
-
-    // Shipping
-    shipping: {
-        weight: Number,
-        dimensions: {
-            length: Number,
-            width: Number,
-            height: Number
-        },
-        freeShipping: {
-            type: Boolean,
-            default: false
-        },
-        shippingCost: {
-            type: Number,
-            min: [0, 'Shipping cost cannot be negative']
-        }
     },
 
     // Reviews & Ratings
