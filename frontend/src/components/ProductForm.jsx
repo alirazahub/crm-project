@@ -143,7 +143,7 @@ const removeImage = (index) => {
     { id: "pricing", label: "Pricing", icon: Tag },
     { id: "inventory", label: "Inventory", icon: Package },
     { id: "media", label: "Images", icon: ImageIcon },
-    { id: "shipping", label: "Shipping", icon: Truck },
+    // { id: "shipping", label: "Shipping", icon: Truck },
   ];
 
   return (

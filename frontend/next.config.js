@@ -4,7 +4,7 @@ const nextConfig = {
     return [
       {
         source: "/register/:path*",
-        destination: "http://localhost:5000/register/:path*", // 👈 change 5000 if needed
+        destination: "http://localhost:5000/register/:path*",
       },
     ];
   },
