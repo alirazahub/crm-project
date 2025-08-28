@@ -1,6 +1,6 @@
 import express from "express";
 import Product from "../models/productmodel.js";
-import {authorize} from "../middleware/authorization.js";
+import { authorize } from "../middleware/authorization.js";
 import handleMulterErrors from "../middleware/multer.js";
 
 const router = express.Router();
@@ -12,7 +12,10 @@ function safeParseArray(value) {
     return JSON.parse(value); // try JSON
   } catch {
     // fallback: split comma-separated strings
-    return value.split(",").map((v) => v.trim()).filter(Boolean);
+    return value
+      .split(",")
+      .map((v) => v.trim())
+      .filter(Boolean);
   }
 }
 
@@ -26,40 +29,46 @@ function safeParseObject(value, fallback = {}) {
   }
 }
 
+router.post(
+  "/createproduct",
+  authorize,
+  handleMulterErrors,
+  async (req, res) => {
+    try {
+      console.log("Incoming product data:", req.body);
 
+      // Parse fields back to correct types
+      const productData = {
+        ...req.body,
+        tags: safeParseArray(req.body.tags),
+        discount: safeParseObject(req.body.discount, {}),
+        stock: safeParseObject(req.body.stock, {}),
 
-router.post("/createproduct", authorize, handleMulterErrors, async (req, res) => {
-  try {
-    console.log("Incoming product data:", req.body);
+        price: req.body.price ? Number(req.body.price) : 0,
+        originalPrice: req.body.originalPrice
+          ? Number(req.body.originalPrice)
+          : 0,
+        costPrice: req.body.costPrice ? Number(req.body.costPrice) : 0,
 
-    // Parse fields back to correct types
-    const productData = {
-      ...req.body,
-      tags: safeParseArray(req.body.tags),
-  discount: safeParseObject(req.body.discount, {}),
-  stock: safeParseObject(req.body.stock, {}),
+        isFeatured: req.body.isFeatured === "true",
 
-      price: req.body.price ? Number(req.body.price) : 0,
-      originalPrice: req.body.originalPrice ? Number(req.body.originalPrice) : 0,
-      costPrice: req.body.costPrice ? Number(req.body.costPrice) : 0,
+        images: req.files?.map((file) => file.path) || [],
+      };
 
-      isFeatured: req.body.isFeatured === "true",
+      console.log("Final parsed productData:", productData);
 
-      images: req.files?.map((file) => file.path) || [],
-    };
+      const newProduct = new Product(productData);
+      const savedProduct = await newProduct.save();
 
-    console.log("Final parsed productData:", productData);
-
-    const newProduct = new Product(productData);
-    const savedProduct = await newProduct.save();
-
-    res.status(201).json(savedProduct);
-  } catch (error) {
-    console.error("Error saving product:", error);
-    res.status(500).json({ message: "Server error occurred while saving the product." });
+      res.status(201).json(savedProduct);
+    } catch (error) {
+      console.error("Error saving product:", error);
+      res
+        .status(500)
+        .json({ message: "Server error occurred while saving the product." });
+    }
   }
-});
-
+);
 
 //get all
 router.get("/productlist", async (req, res) => {
@@ -84,7 +93,7 @@ router.get("/productlist/:id", async (req, res) => {
   }
 });
 //delete by id
-router.delete("/productlist/:id", authorize,async (req, res) => {
+router.delete("/productlist/:id", authorize, async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
     if (!product) {
@@ -96,7 +105,6 @@ router.delete("/productlist/:id", authorize,async (req, res) => {
     res.status(500).json({ message: "error at deleting product" });
   }
 });
-
 
 router.put("/productlist/:id", handleMulterErrors, async (req, res) => {
   try {
@@ -153,6 +161,5 @@ router.put("/productlist/:id", handleMulterErrors, async (req, res) => {
     res.status(500).json({ message: "Error updating product" });
   }
 });
-
 
 export default router;
