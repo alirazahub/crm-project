@@ -1,6 +1,6 @@
 import express from "express";
 import Cart from "../models/cartModel.js";
-import Product from "../models/productModel.js";
+import Product from "../models/prodmodel.js";
 import { protect } from "../middleware/authMiddleware.js"; // ✅ correct import
 
 const router = express.Router();

@@ -44,8 +44,8 @@ export default function AdminSidebar({ currentPath }) {
             />
             <NavItem
               icon={Tag}
-              label="Track Roles"
-              active={currentPath === "/track-roles"}
+              label="Track Employees"
+              active={currentPath === "/admin/dashboard/track-roles"}
               link="/admin/dashboard/track-roles"
             />
             <NavItem
