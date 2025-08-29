@@ -31,38 +31,43 @@ export default function Register() {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // if (!fullname || !email || !password || !phone) {
-    //   alert("All fields are required.");
-    //   return;
-    // }
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // if (!validateEmail(email)) {
-    //   alert("Please enter a valid Gmail address.");
-    //   return;
-    // }
+  if (!fullname || !email || !password || !phone) {
+    alert("All fields are required.");
+    return;
+  }
 
-    // if (!validatePassword(password)) {
-    //   alert(
-    //     "Password must be at least 8 characters and include upper/lowercase, numbers, and symbols."
-    //   );
-    //   return;
-    // }
+  if (!validateEmail(email)) {
+    alert("Please enter a valid Gmail address.");
+    return;
+  }
 
-    // if (!validatePhone(phone)) {
-    //   alert(
-    //     "Enter a valid Pakistani phone number (03XXXXXXXXX or +923XXXXXXXXX)."
-    //   );
-    //   return;
-
+  try {
     const result = await dispatch(signupUser(formData));
+
     if (result.meta.requestStatus === "fulfilled") {
-      console.log(result.payload);
-      if (result.payload.role == "admin") router.replace("/dashboard");
-      else router.replace("/customer/homepage");
+      // ✅ Successful registration
+      alert("✅ Registration successful");
+
+      if (result.payload.role === "admin") {
+        router.replace("/admin/dashboard");
+      } else {
+        router.replace("/customer/homepage");
+      }
+    } else {
+      // ❌ Backend error (like user already exists)
+      const errorMessage =
+        result.payload?.message || "Something went wrong. Please try again.";
+      alert(errorMessage);
     }
-  };
+  } catch (error) {
+    // ❌ Network or unexpected error
+    alert(error.message || "Server error, please try again later.");
+  }
+};
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-50 to-indigo-100">
