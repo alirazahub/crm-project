@@ -78,55 +78,53 @@ export default function UserProducts() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product) => (
-            <div
-              key={product._id}
-              onClick={() => router.push(`/customer/products/${product._id}`)}
-              className="group cursor-pointer bg-zinc-900 rounded-xl border border-zinc-800 p-6 flex flex-col justify-between hover:bg-black hover:border-gray-500 hover:shadow-2xl hover:shadow-white/10 transition-all duration-300 transform hover:-translate-y-1"
-            >
-              <div onClick={(e) => e.stopPropagation()}>
-                {product.images && product.images[0] && (
-                  <div className="relative overflow-hidden rounded-lg mb-6">
-                    <img
-                      src={product.images[0] || "/placeholder.svg"}
-                      alt={product.name}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                      onError={(e) => {
-                        console.log("[v0] Image failed to load:", product.images[0])
-                        e.target.src = "/placeholder.svg"
-                      }}
-                      onLoad={() => {
-                        console.log("[v0] Image loaded successfully:", product.images[0])
-                      }}
-                    />
-                  </div>
-                )}
+    <div
+  key={product._id}
+  onClick={() => router.push(`/customer/products/${product._id}`)}
+  className="group cursor-pointer bg-white text-black rounded-2xl border border-zinc-200 p-6 flex flex-col justify-between 
+             hover:shadow-xl hover:shadow-white/10 transition-all duration-300 transform hover:-translate-y-2"
+>
+  <div onClick={(e) => e.stopPropagation()}>
+    {product.images && product.images[0] && (
+      <div className="relative overflow-hidden rounded-xl mb-6">
+        <img
+          src={product.images[0] || "/placeholder.svg"}
+          alt={product.name}
+          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+          onError={(e) => (e.target.src = "/placeholder.svg")}
+        />
+      </div>
+    )}
 
-                <h2 className="text-xl font-semibold text-white mb-3 group-hover:text-gray-100 transition-colors">
-                  {product.name}
-                </h2>
+    <h2 className="text-xl font-bold mb-2 group-hover:text-zinc-800">
+      {product.name}
+    </h2>
 
-                <p className="text-lg font-bold text-gray-300 mb-2">${product.price?.toFixed(2)}</p>
+    <p className="text-lg font-semibold text-zinc-700 mb-2">
+      ${product.price?.toFixed(2)}
+    </p>
 
-                <p className="text-sm text-gray-400 mb-6 line-clamp-3">
-                  {product.description ? product.description.slice(0, 100) + "..." : "No description available"}
-                </p>
-              </div>
+    <p className="text-sm text-zinc-500 mb-6 line-clamp-3">
+      {product.description ? product.description.slice(0, 100) + "..." : "No description available"}
+    </p>
+  </div>
 
-              <div className="flex gap-3 mt-auto" onClick={(e) => e.stopPropagation()}>
-                <button
-                  onClick={() => handleAddToCart(product)}
-                  className="flex-1 bg-white text-black font-semibold py-3 px-4 rounded-lg hover:bg-gray-200 transition-all duration-200 hover:shadow-lg"
-                >
-                  Add to Cart
-                </button>
-                <button
-                  onClick={() => handleBuyNow(product)}
-                  className="flex-1 bg-zinc-800 text-white font-semibold py-3 px-4 rounded-lg border border-gray-500 hover:bg-800 hover:border-gray-400 transition-all duration-200 hover:shadow-lg"
-                >
-                  Buy Now
-                </button>
-              </div>
-            </div>
+  <div className="flex gap-3 mt-auto" onClick={(e) => e.stopPropagation()}>
+    <button
+      onClick={() => handleAddToCart(product)}
+      className="flex-1 bg-black text-white font-semibold py-3 px-4 rounded-lg hover:bg-zinc-800 transition-all duration-200 hover:shadow-lg"
+    >
+      Add to Cart
+    </button>
+    <button
+      onClick={() => handleBuyNow(product)}
+      className="flex-1 bg-white border border-zinc-300 text-black font-semibold py-3 px-4 rounded-lg hover:bg-zinc-100 transition-all duration-200 hover:shadow-lg"
+    >
+      Buy Now
+    </button>
+  </div>
+</div>
+
           ))}
         </div>
       </div>
