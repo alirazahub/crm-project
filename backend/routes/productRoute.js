@@ -266,11 +266,9 @@ router.get("/products/filter", async (req, res) => {
     console.error("Error filtering products:", error)
     res.status(500).json({ message: "Error filtering products" })
   }
-})
-
+});
 router.post("/createproduct", authorize, handleMulterErrors, async (req, res) => {
   try {
-    console.log("Incoming product data:", req.body)
     console.log("Incoming product data:", req.body)
 
     // Parse fields back to correct types
@@ -279,33 +277,23 @@ router.post("/createproduct", authorize, handleMulterErrors, async (req, res) =>
       tags: safeParseArray(req.body.tags),
       discount: safeParseObject(req.body.discount, {}),
       stock: safeParseObject(req.body.stock, {}),
-      discount: safeParseObject(req.body.discount, {}),
-      stock: safeParseObject(req.body.stock, {}),
       price: req.body.price ? Number(req.body.price) : 0,
       originalPrice: req.body.originalPrice ? Number(req.body.originalPrice) : 0,
       costPrice: req.body.costPrice ? Number(req.body.costPrice) : 0,
       isFeatured: req.body.isFeatured === "true",
       images: req.files?.map((file) => file.path) || [],
     }
-    }
 
-    console.log("Final parsed productData:", productData)
     console.log("Final parsed productData:", productData)
 
     const newProduct = new Product(productData)
     const savedProduct = await newProduct.save()
-    const newProduct = new Product(productData)
-    const savedProduct = await newProduct.save()
 
-    res.status(201).json(savedProduct)
     res.status(201).json(savedProduct)
   } catch (error) {
     console.error("Error saving product:", error)
     res.status(500).json({ message: "Server error occurred while saving the product." })
-    console.error("Error saving product:", error)
-    res.status(500).json({ message: "Server error occurred while saving the product." })
   }
-})
 })
 
 //get all

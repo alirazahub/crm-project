@@ -1,3 +1,4 @@
+// models/Product.js
 import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema({
@@ -86,11 +87,6 @@ const productSchema = new mongoose.Schema({
             min: [0, 'Stock cannot be negative'],
             default: 0
         },
-        sold: {
-            type: Number,
-            min: [0, 'Sold count cannot be negative'],
-            default: 0
-        },
         lowStockThreshold: {
             type: Number,
             default: 10
@@ -150,10 +146,8 @@ const productSchema = new mongoose.Schema({
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
-  }
-);
+});
 
-// ✅ Fix: use existing model if already compiled
-const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 
-export default Product;
+const product = mongoose.model('Product', productSchema);
+export default product; 
