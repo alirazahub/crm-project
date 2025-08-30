@@ -25,7 +25,8 @@ export default function DeliveredOrders() { // Renamed component from PendingOrd
   const handleStatusChange = async (orderId) => {
     try {
       await api.put(`/update-order-status/${orderId}`, {
-        status: "delivered"
+        status: "delivered" ,
+        type: "customer"
       });
       fetchOrders(); // Refresh orders after status update
     } catch (error) {

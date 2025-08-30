@@ -1,5 +1,5 @@
 import express from "express"
-import Product from "../models/productModel.js"
+import Product from "../models/productmodel.js"
 import { authorize } from "../middleware/authorization.js";
 import handleMulterErrors from "../middleware/multer.js"
 

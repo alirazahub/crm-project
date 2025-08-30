@@ -185,7 +185,6 @@ export default function ProductsPage() {
             {product.category}
           </span>
           <InventoryProducts product={product} />
-
         </div>
 
         {/* Tags */}

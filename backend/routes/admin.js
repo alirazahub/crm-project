@@ -69,16 +69,30 @@ router.get('/get-pending-orders' ,authorize , async (req, res)=>{
 
 router.put('/update-order-status/:orderId', authorize, async (req, res) => {
   const { orderId } = req.params;
-  const { status } = req.body;
+  const { status , type} = req.body;
 
   console.log('Update order status endpoint hit', status);
 
   try {
+    let order ;
     // Check if order exists
-    const order = await Order.findById(orderId).populate('items.product' , 'stock name');
+    if(type === 'customer'){
+      order = await Order.findById(orderId).populate('items.product' , 'stock name');
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
     }
+    }
+    else if(type === 'stock')
+    {
+      order = await StockOrder.findById(orderId).populate('items.product' , 'stock name');
+       if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    }
+    else{
+      return res.status(404).json({ error: 'invalid order type' });
+    }
+   
 
     if (status === 'shipped') {
       // Loop with `for...of` to allow early return
@@ -97,6 +111,7 @@ router.put('/update-order-status/:orderId', authorize, async (req, res) => {
       }
     }
     else if( status === 'received') {
+      console.log(order) ;
       console.log('Marking order as received, restocking items');
       for (const item of order.items) {
         item.product.stock.quantity += item.quantity;
@@ -168,11 +183,11 @@ router.post('/place-stock-order' , authorize , async (req, res)=>{
 
 router.get('/get-stock-orders' , authorize , async (req, res)=>{
   try{
-    const orders = await Order.find({
+    const orders = await StockOrder.find({
           status: "pending", // only pending orders
         })
-          .populate("user", "name email role")
-          .populate("items.product", "name price");
+          .populate("user", "fullname email role")
+          .populate("items.product", "name");
   
         // filter out orders where populated user is not admin/sales
         const filteredOrders = orders.filter(

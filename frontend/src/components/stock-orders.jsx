@@ -1,95 +1,103 @@
-"use client";
+'use client';
 
-import { use } from "react";
-import { useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/utils/api";
 
-export default function StockOrders({ orders }) {
-  //const orders = use(ordersPromise);
-  const dispatch = useDispatch();
+export default function StockOrders() {
+  const [orders, setOrders] = useState([]);
   const router = useRouter();
 
-  const handleStatusChange = async (orderId) => {
-  try {
-    await api.put(`/update-order-status/${orderId}`, { status: "received" });
-    router.refresh(); // 👈 forces server re-fetch
-  } catch (error) {
-    // If backend sent 400 error with { error: "message" }
-    if (error.response?.data?.error) {
-      alert(error.response.data.error); // or show toast
-    } else {
-      console.error("Failed to update status:", error);
+  const fetchOrders = async () => {
+    try {
+      const res = await api.get("/get-stock-orders");
+      setOrders(res.data || []);
+    } catch (error) {
+      console.error("Failed to fetch stock orders:", error);
     }
-  }
-};
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const handleStatusChange = async (orderId) => {
+    try {
+      await api.put(`/update-order-status/${orderId}`, { status: "received" , type:'stock' });
+      fetchOrders() // Refresh the data
+    } catch (error) {
+      if (error.response?.data?.error) {
+        alert(error.response.data.error);
+      } else {
+        console.error("Failed to update status:", error);
+      }
+    }
+  };
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Header */}
-      <h2 className="text-lg font-semibold mb-4">📦 Stock Orders</h2>
+    <div className="h-full flex flex-col space-y-4">
+      <h2 className="text-2xl font-bold text-slate-100">📦 Stock Orders</h2>
 
-      {/* Empty state */}
-      {orders.length === 0 && (
-        <div className="text-gray-500 text-sm">No stock orders found</div>
-      )}
-
-      {/* Orders List */}
-      <ul className="space-y-4 overflow-y-auto pr-2">
-        {orders.map((order) => (
-          <li
-            key={order._id}
-            className="rounded-xl border bg-white p-4 shadow-sm hover:shadow-md transition"
-          >
-            {/* Top section: order info + status */}
-            <div className="flex justify-between items-center mb-2">
-              <p className="font-semibold text-sm">
-                Order #{order._id.slice(-6)}
-              </p>
-
-              <span
-                className={`px-2 py-0.5 text-xs rounded-md font-medium ${
-                  order.status === "received"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-yellow-100 text-yellow-700"
-                }`}
-              >
-                {order.status}
-              </span>
-            </div>
-
-            {/* Order Date */}
-            <p className="text-xs text-gray-500 mb-3">
-              Placed on {new Date(order.createdAt).toLocaleDateString()}
-            </p>
-
-            {/* Products */}
-            <div className="space-y-1 mb-3">
-              {order.items.map((item) => (
-                <div
-                  key={item._id}
-                  className="flex justify-between text-sm text-gray-700"
+      {orders.length === 0 ? (
+        <div className="text-slate-400">No stock orders found.</div>
+      ) : (
+        <ul className="space-y-4 overflow-y-auto pr-2">
+          {orders.map((order) => (
+            <li
+              key={order._id}
+              className="rounded-xl border border-slate-800 bg-slate-900 p-5 shadow-sm hover:shadow-md transition"
+            >
+              {/* Header Row */}
+              <div className="flex justify-between items-center mb-2">
+                <p className="text-sm font-semibold text-slate-100">
+                  Order #{order._id.slice(-6)}
+                </p>
+                <span
+                  className={`px-2 py-0.5 text-xs rounded-md font-semibold ${
+                    order.status === "received"
+                      ? "bg-green-200 text-green-800"
+                      : "bg-yellow-200 text-yellow-800"
+                  }`}
                 >
-                  <span>{item.product?.name}</span>
-                  <span>
-                    {item.quantity} × ${item.price.toFixed(2)}
-                  </span>
-                </div>
-              ))}
-            </div>
+                  {order.status}
+                </span>
+              </div>
 
-            {/* Action button */}
-            {order.status !== "received" && (
-              <button
-                onClick={() => handleStatusChange(order._id)}
-                className="w-full px-3 py-1.5 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
-              >
-                Mark as Received
-              </button>
-            )}
-          </li>
-        ))}
-      </ul>
+              {/* Date & User Info */}
+              <div className="text-sm text-slate-400 mb-3 space-y-1">
+                <p>Placed on: {new Date(order.createdAt).toLocaleDateString()}</p>
+                {order.user && (
+                  <>
+                  <p>Stock order placed by : </p>
+                    <p>User: {order.user.fullname}</p>
+                    <p>Email: {order.user.email}</p>
+                  </>
+                )}
+              </div>
+
+              {/* Items */}
+              <div className="space-y-1 text-sm text-slate-200 mb-4">
+                {order.items.map((item) => (
+                  <div key={item._id} className="flex justify-between">
+                    <span>{item.product?.name || "Unnamed Product"}</span>
+                    <span className="text-slate-300">× {item.quantity}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Action */}
+              {order.status !== "received" && (
+                <button
+                  onClick={() => handleStatusChange(order._id)}
+                  className="w-full px-3 py-2 text-sm font-medium rounded-md bg-green-600 text-white hover:bg-green-700 transition"
+                >
+                  Mark as Received
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

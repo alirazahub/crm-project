@@ -1,5 +1,4 @@
 'use client';
-'use client';
 
 import { useEffect, useState } from "react";
 import api from "@/utils/api";
@@ -25,7 +24,7 @@ export default function PendingOrders() {
 
   const handleStatusChange = async (orderId) => {
   try {
-    await api.put(`/update-order-status/${orderId}`, { status: "shipped" });
+    await api.put(`/update-order-status/${orderId}`, { status: "shipped" , type:"customer" });
     fetchOrders();
   } catch (error) {
     // If backend sent 400 error with { error: "message" }
