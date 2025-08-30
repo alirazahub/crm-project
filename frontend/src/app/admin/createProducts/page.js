@@ -21,7 +21,8 @@ export default function AddProductPage() {
   };
 
   const handleCancel = () => {
-    router.push("/admin/display-products");
+    router.push("/display-products");
+    router.push("/display-products");
   };
 
   return (
