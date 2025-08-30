@@ -4,7 +4,8 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import {authorize}  from '../middleware/authorization.js';
 import Order from '../models/orderModel.js';
-import product from '../models/productModel.js';
+import StockOrder from '../models/stockOrderModel.js';
+import product from '../models/productmodel.js';
 dotenv.config();
 
 const router = express.Router() ;
@@ -138,19 +139,17 @@ router.post('/place-stock-order' , authorize , async (req, res)=>{
     console.log('placing stock order' , productId , quantity , price) ;
     
     // Create new order
-    const order = new Order({
+    const order = new StockOrder({
       user: req.user._id,
       items: {
         product: productId ,
         quantity: quantity ,
         price: price
       },
-      totalPrice: 0, // Assuming stock orders don't have a price
+
       shippingDetails: {
-        fullName: req.user.fullname || 'Admin',
         address: 'ebazar factory',
         city: 'lahore',
-        postalCode: '54000',
         phone: '0000000000'
       }
     });
@@ -166,5 +165,27 @@ router.post('/place-stock-order' , authorize , async (req, res)=>{
     res.status(500).json({ error: 'Failed to place stock order' });
   }
 })
+
+router.get('/get-stock-orders' , authorize , async (req, res)=>{
+  try{
+    const orders = await Order.find({
+          status: "pending", // only pending orders
+        })
+          .populate("user", "name email role")
+          .populate("items.product", "name price");
+  
+        // filter out orders where populated user is not admin/sales
+        const filteredOrders = orders.filter(
+          (o) => o.user && ["admin", "sales"].includes(o.user.role)
+        );
+  
+        return res.status(200).json(filteredOrders);
+  }
+  catch (err) {
+    console.error('Error fetching stock orders:', err);
+    res.status(500).json({ error: 'Failed to fetch stock orders' });
+  }
+        
+});
 
 export default router ;

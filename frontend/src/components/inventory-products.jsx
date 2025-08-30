@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { placeStockOrder } from "@/store/slices/orderSlice";
 
-export default function InventoryProducts() {
+export default function InventoryProducts({product}) {
   const { products } = useSelector((state) => state.product);
   const router = useRouter();
   const dispatch = useDispatch();
@@ -17,6 +17,11 @@ export default function InventoryProducts() {
   const [open, setOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(10);
+
+  const stockQty = product.stock?.quantity ?? 0;
+  const lowStock = product.stock?.lowStockThreshold ?? 10;
+  const isLow = stockQty <= lowStock;
+
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -41,48 +46,7 @@ export default function InventoryProducts() {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">📦 Inventory Products</h1>
-
-      {products && products.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => {
-            const stockQty = product.stock?.quantity ?? 0;
-            const lowStock = product.stock?.lowStockThreshold ?? 10;
-            const isLow = stockQty <= lowStock;
-
-            return (
-              <div
-                key={product._id}
-                className="border rounded-2xl shadow-md p-5 bg-white hover:shadow-lg transition"
-              >
-                {/* Image */}
-                {/* Image */}
-                {product.images && product.images.length > 0 ? (
-                  <DisplayImg imgs={product.images} />
-                ) : (
-                <div className="w-32 h-32 flex items-center justify-center rounded-md border bg-gray-50">
-                  <ImageIcon size={64} className="text-slate-400" />
-                  </div>
-                )}
-
-
-                {/* Product Info */}
-                <h2 className="text-lg font-semibold text-gray-900">{product.name}</h2>
-                <p className="text-sm text-gray-500">{product.category || "Uncategorized"}</p>
-
-                <div className="mt-3">
-                  <p className="text-gray-700">
-                    <span className="font-medium">Price:</span> $
-                    {product.price?.toFixed(2) || "0.00"}
-                  </p>
-                  {product.originalPrice && (
-                    <p className="text-sm text-gray-500 line-through">
-                      ${product.originalPrice?.toFixed(2)}
-                    </p>
-                  )}
-                </div>
-
+    <div className="p-6">            
                 {/* Stock Status */}
                 <div className="mt-4">
                   <span
@@ -92,7 +56,7 @@ export default function InventoryProducts() {
                         : "bg-green-100 text-green-700"
                     }`}
                   >
-                    Stock: {stockQty}
+                    Stock: {product.stock?.quantity ?? 0}
                   </span>
                   <p className="text-xs text-gray-500 mt-1">
                     Sold: {product.stock?.sold ?? 0}
@@ -111,11 +75,7 @@ export default function InventoryProducts() {
                 </div>
               </div>
             );
-          })}
-        </div>
-      ) : (
-        <p className="text-gray-500">No products available.</p>
-      )}
+          }
 
       {/* Custom Modal */}
       {open && (
@@ -165,6 +125,3 @@ export default function InventoryProducts() {
           </div>
         </div>
       )}
-    </div>
-  );
-}

@@ -30,6 +30,7 @@ import {
   fetchProducts,
   deleteProduct,
 } from "../../../store/slices/productSlice";
+import InventoryProducts from "@/components/inventory-products";
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -183,9 +184,8 @@ export default function ProductsPage() {
           <span className="px-2 py-1 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg">
             {product.category}
           </span>
-          <span className="text-slate-400">
-            Stock: {product.stock?.quantity || 0}
-          </span>
+          <InventoryProducts product={product} />
+
         </div>
 
         {/* Tags */}
