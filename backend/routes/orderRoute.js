@@ -64,11 +64,56 @@ if (freshCart) {
 // Get logged-in user's latest order
 router.get("/my-orders", protect, async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
-    res.json(orders[0]); // send latest order
+
+    // For normal user → return their latest order
+    const orders = await Order.find({ user: req.user._id })
+      .sort({ createdAt: -1 })
+      .limit(1)
+      .populate("items.product", "name price");
+
+    res.json(orders[0] || null);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch orders", error });
   }
 });
+
+// GET total revenue
+router.get('/total-revenue', async (req, res) => {
+  try {
+    const totalRevenueResult = await Order.aggregate([
+      {
+        $match: {
+          status: { $in: ["paid", "shipped", "delivered", "received"] } // Only consider completed orders for revenue
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: "$totalPrice" }
+        }
+      }
+    ]);
+
+    const totalRevenue = totalRevenueResult.length > 0 ? totalRevenueResult[0].totalRevenue : 0;
+    res.status(200).json({ totalRevenue });
+  } catch (error) {
+    console.error("Error fetching total revenue:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
+// GET total sales (count of completed orders)
+router.get('/total-sales', async (req, res) => {
+  try {
+    const totalSales = await Order.countDocuments({
+      status: { $in: ["paid", "shipped", "delivered", "received"] } // Only count completed orders as sales
+    });
+    res.status(200).json({ totalSales });
+  } catch (error) {
+    console.error("Error fetching total sales:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
 
 export default router;

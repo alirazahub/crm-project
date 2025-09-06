@@ -87,6 +87,11 @@ const productSchema = new mongoose.Schema({
             min: [0, 'Stock cannot be negative'],
             default: 0
         },
+        sold: {
+            type: Number,
+            min: [0, 'Sold count cannot be negative'],
+            default: 0
+        },
         lowStockThreshold: {
             type: Number,
             default: 10

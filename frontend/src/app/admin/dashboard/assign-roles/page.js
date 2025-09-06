@@ -2,8 +2,6 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { createUser } from "@/lib/actions";
-import AdminSidebar from "@/components/AdminSideBar";
-import AdminHeader from "@/components/AdminHeader";
 
 export default function AssignRole() {
   const router = useRouter();

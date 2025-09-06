@@ -1,100 +1,208 @@
-'use client';
-'use client';
+"use client"
 
-import { useEffect, useState } from "react";
-import api from "@/utils/api";
+import { useState } from "react"
+import api from "@/utils/api"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Package, Clock, Truck, AlertCircle, Eye } from "lucide-react"
 
-export default function PendingOrders() {
-  const [orders, setOrders] = useState([]);
+export default function PendingOrders({ allOrders, fetchOrders }) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [expandedOrders, setExpandedOrders] = useState(new Set())
 
-  const fetchOrders = async () => {
-    try {
-      const res = await api.get('/get-pending-orders');
-      console.log(res.data);
-      setOrders(res.data || []);
+  // Filter for only pending orders from the allOrders prop
+  const orders = allOrders.filter((o) => o.status === "pending")
 
-    } catch (error) {
-      console.error("Failed to fetch orders:", error);
+  const toggleOrderExpansion = (orderId) => {
+    const newExpanded = new Set(expandedOrders)
+    if (newExpanded.has(orderId)) {
+      newExpanded.delete(orderId)
+    } else {
+      newExpanded.add(orderId)
     }
-  };
+    setExpandedOrders(newExpanded)
+  }
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+  const getStatusDot = (status) => {
+    switch (status) {
+      case "delivered":
+        return "bg-green-500"
+      case "shipped":
+        return "bg-blue-500"
+      case "pending":
+        return "bg-yellow-500"
+      default:
+        return "bg-slate-500"
+    }
+  }
 
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "delivered":
+        return "bg-green-500/10 text-green-400 border-green-500/30"
+      case "shipped":
+        return "bg-blue-500/10 text-blue-400 border-blue-500/30"
+      case "pending":
+        return "bg-yellow-500/10 text-yellow-400 border-yellow-500/30"
+      default:
+        return "bg-slate-500/10 text-slate-400 border-slate-500/30"
+    }
+  }
 
   const handleStatusChange = async (orderId) => {
     try {
+      setLoading(true)
       await api.put(`/update-order-status/${orderId}`, {
-        status: "shipped"
-      });
-      fetchOrders(); // Refresh orders after status update
-    } catch (error) {
-      console.error("Failed to update status:", error);
+        status: "shipped",
+        type: "customer",
+      })
+      fetchOrders()
+    } catch (err) {
+      console.error("Failed to update status:", err)
+      setError("Failed to update order status. Please try again.")
+      alert("Failed to update order status: " + (err.response?.data?.error || err.message))
+    } finally {
+      setLoading(false)
     }
-  };
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="w-4 h-4 border-2 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div>
+      </div>
+    )
+  }
 
   return (
-    <div className="p-4 sm:p-6"> {/* Adjusted padding */}
-      <h2 className="text-2xl font-bold text-slate-100 mb-6">Pending Orders</h2> {/* Changed to h2, adjusted text color */}
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-medium text-slate-300 flex items-center gap-2">
+          <Clock className="h-4 w-4 text-cyan-500" />
+          Pending Orders
+        </h3>
+        <span className="text-xs text-slate-500">{orders.length} orders</span>
+      </div>
 
-      {orders.length === 0 ? (
-        <p className="text-slate-400 text-center py-8">No pending orders found.</p>
-      ) : (
-        orders.map((order) => (
-          <div key={order._id}
-               className="bg-slate-800/50 border border-slate-700 rounded-lg p-5 mb-6 shadow-lg hover:bg-slate-700/50 transition-colors duration-200 cursor-pointer"> {/* Dark theme card styling */}
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 flex items-center gap-2">
+          <AlertCircle className="text-red-400 h-4 w-4" />
+          <p className="text-xs text-red-400">{error}</p>
+        </div>
+      )}
 
-            <div className="grid md:grid-cols-2 gap-4 mb-4 text-slate-300"> {/* Grid for better layout */}
-              <div><span className="font-semibold text-slate-200">Order ID:</span> {order._id}</div>
-              <div><span className="font-semibold text-slate-200">Customer:</span> {order.customerName || "N/A"}</div> {/* Assuming a customerName field */}
-              <div><span className="font-semibold text-slate-200">Order Date:</span> {new Date(order.createdAt).toLocaleDateString()}</div> {/* Assuming createdAt */}
+      {orders && orders.length > 0 ? (
+        <div className="bg-slate-900/50 border border-slate-700/50 rounded-lg overflow-hidden">
+          <div className="bg-slate-800/30 border-b border-slate-700/50">
+            <div className="grid grid-cols-12 gap-3 px-3 py-2 text-xs font-medium text-slate-400">
+              <div className="col-span-3">Order</div>
+              <div className="col-span-2">Customer</div>
+              <div className="col-span-1">Date</div>
+              <div className="col-span-2">Items</div>
+              <div className="col-span-1">Total</div>
+              <div className="col-span-2">Status</div>
+              <div className="col-span-1">Actions</div>
             </div>
-
-            <div className="mb-4">
-              <h3 className="font-semibold text-slate-200 mb-2">Items:</h3>
-              <ul className="space-y-2">
-                {order.items?.map((item) => (
-                  <li key={item._id} className="bg-slate-700/40 p-3 rounded text-slate-300 flex justify-between items-center"> {/* Dark theme item styling */}
-                    <div>
-                      <span className="font-medium text-slate-200">{item.product.name}</span> <br />
-                      <span className="text-sm text-slate-400">Qty: {item.quantity} | Price: ${item.price?.toFixed(2)}</span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="mb-2 text-slate-300">
-              <span className="font-semibold text-slate-200">Total Price:</span> <span className="text-lg font-bold text-blue-400">${order.totalPrice?.toFixed(2)}</span>
-            </div>
-
-            <div className="mb-2 text-slate-300">
-              <span className="font-semibold text-slate-200">Shipping Address:</span> {order.shippingDetails?.address || "N/A"}
-            </div>
-
-            <div className="mb-4">
-              <span className="font-semibold text-slate-200">Status:</span>{" "}
-              <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
-                order.status === "pending"
-                  ? "bg-amber-600/20 text-amber-300 border border-amber-500/30"
-                  : "bg-green-600/20 text-green-300 border border-green-500/30" // Fallback, though we expect pending here
-              }`}>
-                {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-              </span>
-            </div>
-
-            {order.status === "pending" && (
-              <button
-                onClick={() => handleStatusChange(order._id)}
-                className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium shadow-md"
-              >
-                Mark as Shipped
-              </button>
-            )}
           </div>
-        ))
+
+          <div className="divide-y divide-slate-700/30">
+            {orders.map((order) => (
+              <div key={order._id}>
+                <div className="grid grid-cols-12 gap-3 items-center text-xs text-slate-300 px-3 py-3 hover:bg-slate-800/30">
+                  <div className="col-span-3 flex items-center">
+                    <div className={`w-2 h-2 rounded-full ${getStatusDot(order.status)} mr-2`}></div>
+                    <span className="font-mono text-cyan-400 truncate">{order._id}</span>
+                  </div>
+                  <div className="col-span-2 truncate">{order.user?.fullname || "N/A"}</div>
+                  <div className="col-span-1 text-slate-400">
+                    {new Date(order.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  </div>
+                  <div className="col-span-2 flex items-center gap-1">
+                    <Package className="h-3 w-3" />
+                    {order.items?.length || 0}
+                  </div>
+                  <div className="col-span-1 font-semibold text-green-400">${order.totalPrice?.toFixed(2)}</div>
+                  <div className="col-span-2">
+                    <Badge variant="outline" className={`${getStatusBadge(order.status)} text-xs`}>
+                      {order.status}
+                    </Badge>
+                  </div>
+                  <div className="col-span-1 flex items-center gap-1">
+                    <button
+                      onClick={() => toggleOrderExpansion(order._id)}
+                      className="p-1 hover:bg-slate-700/50 rounded transition-colors"
+                    >
+                      <Eye className="h-3 w-3 text-slate-400" />
+                    </button>
+                    {order.status === "pending" && (
+                      <Button
+                        onClick={() => handleStatusChange(order._id)}
+                        size="sm"
+                        className="bg-cyan-400 hover:bg-blue-700 text-slate-700 h-6 px-2 text-xs"
+                        disabled={loading}
+                      >
+                        <Truck className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {expandedOrders.has(order._id) && (
+                  <div className="bg-slate-800/20 border-t border-slate-700/30 px-3 py-3">
+                    <div className="grid md:grid-cols-2 gap-4 text-xs">
+                      <div>
+                        <h4 className="font-medium text-slate-300 mb-2 flex items-center gap-1">
+                          <Package className="h-3 w-3" />
+                          Items
+                        </h4>
+                        <div className="space-y-1">
+                          {order.items?.map((item) => (
+                            <div
+                              key={item._id}
+                              className="bg-slate-700/30 p-2 rounded border border-slate-700/50 flex justify-between items-center"
+                            >
+                              <div>
+                                <div className="text-slate-200 text-xs">
+                                  {item.product ? item.product.name : "Unknown Product"}
+                                </div>
+                                <div className="text-slate-500 text-xs">
+                                  Qty: {item.quantity} • ${item.price?.toFixed(2)}
+                                </div>
+                              </div>
+                              {item.product?.images && item.product.images.length > 0 && (
+                                <img
+                                  src={item.product.images[0] || "/placeholder.svg"}
+                                  alt={item.product.name}
+                                  className="w-6 h-6 object-cover rounded border border-slate-600"
+                                />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-slate-300 mb-2">Shipping</h4>
+                        <div className="bg-slate-700/30 p-2 rounded border border-slate-700/50">
+                          <div className="text-slate-300 text-xs break-words">
+                            {order.shippingDetails?.address || "N/A"}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="text-center py-8 bg-slate-900/30 rounded-lg border border-slate-700/50">
+          <Clock className="mx-auto text-slate-500 mb-2 h-8 w-8" />
+          <h3 className="text-sm font-medium text-slate-300 mb-1">No pending orders</h3>
+          <p className="text-xs text-slate-500">Pending orders will appear here.</p>
+        </div>
       )}
     </div>
-  );
+  )
 }

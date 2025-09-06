@@ -47,6 +47,21 @@ export const placeOrder = createAsyncThunk(
   }
 );
 
+export const placeStockOrder = createAsyncThunk(
+  "order/placeStockOrder",
+  async (orderData, { rejectWithValue }) => {
+    try {
+      console.log("Order Data in thunk:", orderData);
+      const { data } = await api.post("/place-stock-order", orderData);
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Order placement failed"
+      );
+    }
+  }
+);
 
 
 // Fetch latest order
@@ -108,9 +123,23 @@ const orderSlice = createSlice({
       })
       .addCase(fetchMyOrder.fulfilled, (state, action) => {
         state.status = "succeeded";
+        console.log("Fetched order:", action.payload);
         state.currentOrder = action.payload; // backend returns latest order
       })
       .addCase(fetchMyOrder.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(placeStockOrder.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(placeStockOrder.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.currentOrder = action.payload.order;
+        state.successMessage = action.payload.message;
+      })
+      .addCase(placeStockOrder.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });

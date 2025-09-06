@@ -117,7 +117,7 @@ useEffect(() => {
             <input name="postalCode" value={form.postalCode} onChange={handleChange} placeholder="Postal Code" className="w-full p-3 border rounded-lg"/>
             <input name="phone" value={form.phone} onChange={handleChange} placeholder="Phone Number" className="w-full p-3 border rounded-lg"/>
 
-            <button type="submit" disabled={status === "loading"} className="w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-xl shadow-md hover:bg-green-700 transition">
+            <button type="submit" disabled={status === "loading"} className="w-full px-6 py-3 bg-black text-white font-semibold rounded-xl shadow-md hover:bg-zinc-700 transition">
               {status === "loading" ? "Placing Order..." : "Place Order"}
             </button>
           </form>

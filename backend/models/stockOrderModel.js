@@ -9,14 +9,10 @@ const orderItemSchema = new mongoose.Schema({
   quantity: {
     type: Number,
     required: true
-  },
-  price: {
-    type: Number,
-    required: true
   }
 });
 
-const orderSchema = new mongoose.Schema(
+const stockOrderSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -25,25 +21,19 @@ const orderSchema = new mongoose.Schema(
     },
     items: [orderItemSchema],
     shippingDetails: {
-      fullName: { type: String, required: true },
       address: { type: String, required: true },
       city: { type: String, required: true },
-      postalCode: { type: String, required: true },
       phone: { type: String, required: true }
-    },
-    totalPrice: {
-      type: Number,
-      required: true
     },
     //added received status for stock confirmation from admin side
     status: {
       type: String,
-      enum: ["pending", "paid", "shipped", "delivered", "cancelled" , "received"],
+      enum: ["pending" , "cancelled" , "received"],
       default: "pending"
     }
   },
   { timestamps: true }
 );
 
-const Order = mongoose.model("Order", orderSchema);
-export default Order;
+const StockOrder = mongoose.model("StockOrder", stockOrderSchema);
+export default StockOrder;

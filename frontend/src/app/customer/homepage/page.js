@@ -3,13 +3,13 @@
 import HeroSection from '@/components/HeroSection';
 import Navbar from '../../../components/Navbar';
 import UserProducts from '@/components/UserProduct';
-import { useSession } from 'next-auth/react';
+
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function HomePage() {
-  const { data: session, status } = useSession();
+
   const { user, isAuthenticated, loading } = useSelector((state) => state.auth);
   const router = useRouter();
   const [checked, setChecked] = useState(false);

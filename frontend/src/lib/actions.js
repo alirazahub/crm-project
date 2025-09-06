@@ -1,6 +1,5 @@
 'use server'
 
-import { signIn } from "@/auth"
 import api from "@/utils/api";
 import { redirect } from "next/navigation";
 import { cookies } from 'next/headers';
