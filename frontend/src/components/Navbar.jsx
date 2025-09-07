@@ -1,139 +1,65 @@
-/*"use client";
-
-import Link from "next/link";
-import { useState } from "react";
-import { ShoppingCart, Menu, X, User, LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useSelector, useDispatch } from "react-redux";
-import { logoutUser } from "@/store/slices/authSlice";
-import Profile from "./Profile"; 
-
-
-export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  //moved profile logic to profile component for reuse across admin and customer navbar
-
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
-  console.log(user , isAuthenticated) ;
-  const { totalQuantity } = useSelector((state) => state.cart); // ✅ get cart count
-
-  const toggleMenu = () => setIsOpen(!isOpen);
-
-  return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-   
-          <div className="flex-shrink-0">
-            <Link href="/" className="text-xl font-bold text-gray-800">
-              CRM
-            </Link>
-          </div>
-
-          <div className="hidden md:flex space-x-6 items-center">
-            <Link href="/" className="text-gray-700 hover:text-black">Home</Link>
-            <Link href="/products" className="text-gray-700 hover:text-black">Products</Link>
-            <Link href="/contact" className="text-gray-700 hover:text-black">Contact</Link>
-            
-            { isAuthenticated && user.role === 'user' && (
-              <Link href="/customer/cart" className="relative">
-              <ShoppingCart className="h-5 w-5 text-gray-700 hover:text-black" />
-              {totalQuantity > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                  {totalQuantity}
-                </span>
-              )}
-            </Link>
-            )
-            }
-
-            {isAuthenticated ? (
-              <div className="relative">
-                <Profile user={user} />
-              </div>
-            ) : (
-              <Link 
-                href="/sign-in" 
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-              >
-                Sign In
-              </Link>
-            )}
-          </div>
-
-
-          <div className="md:hidden flex items-center space-x-2">
-            <button onClick={toggleMenu}>
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      
-    </nav>
-  );
-}
-*/
-
-
 "use client"
 
-
-import Link from "next/link";
-import { useState } from "react";
-import { ShoppingCart, Menu, X, User, LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useSelector, useDispatch } from "react-redux";
-import { logoutUser } from "@/store/slices/authSlice";
-import Profile from "./Profile"; 
-
+import Link from "next/link"
+import { useState } from "react"
+import { ShoppingCart, Menu, X } from "lucide-react"
+import { useSelector } from "react-redux"
+import Profile from "./Profile"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  //moved profile logic to profile component for reuse across admin and customer navbar
-
   const { user, isAuthenticated } = useSelector((state) => state.auth)
-  console.log(user, isAuthenticated)
-  const { totalQuantity } = useSelector((state) => state.cart) // ✅ get cart count
+  const { totalQuantity } = useSelector((state) => state.cart)
 
   const toggleMenu = () => setIsOpen(!isOpen)
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
+    <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/customer/homepage"  className="text-xl font-bold text-gray-800">
-              CRM
+            <Link
+              href="/customer/homepage"
+              className="text-2xl font-bold text-black hover:text-gray-700 transition-colors duration-200 font-sans"
+            >
+              GLOBUY
             </Link>
           </div>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-6 items-center">
-            <Link href="/customer/homepage" className="text-gray-700 hover:text-black">
+          <div className="hidden md:flex space-x-8 items-center">
+            <Link
+              href="/customer/homepage"
+              className="text-gray-600 hover:text-black font-medium transition-colors duration-200 font-sans"
+            >
               Home
             </Link>
-            <Link href="/customer/filter"  className="text-gray-700 hover:text-black">
+            <Link
+              href="/customer/filter"
+              className="text-gray-600 hover:text-black font-medium transition-colors duration-200 font-sans"
+            >
               Products
             </Link>
-            <Link href="/contact" className="text-gray-700 hover:text-black">
+            <Link
+              href="/contact"
+              className="text-gray-600 hover:text-black font-medium transition-colors duration-200 font-sans"
+            >
               Contact
             </Link>
 
-            {isAuthenticated && user.role === "user" && (
-              <Link href="/customer/cart" className="relative">
-                <ShoppingCart className="h-5 w-5 text-gray-700 hover:text-black" />
+            {isAuthenticated && user?.role === "user" && (
+              <Link
+                href="/customer/cart"
+                className="relative p-2 rounded-full hover:bg-gray-50 transition-colors duration-200 group"
+              >
+                <ShoppingCart className="h-6 w-6 text-gray-600 group-hover:text-black transition-colors duration-200" />
                 {totalQuantity > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                  <span className="absolute -top-1 -right-1 bg-black text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-medium font-sans">
                     {totalQuantity}
                   </span>
                 )}
               </Link>
             )}
 
-            {/* Profile and Logout Buttons */}
             {isAuthenticated ? (
               <div className="relative">
                 <Profile user={user} />
@@ -141,18 +67,69 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/sign-in"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                className="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors duration-200 font-medium font-sans"
               >
                 Sign In
               </Link>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-2">
-            <button onClick={toggleMenu}>{isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}</button>
+            {isAuthenticated && user?.role === "user" && (
+              <Link
+                href="/customer/cart"
+                className="relative p-2 rounded-full hover:bg-gray-50 transition-colors duration-200 group mr-2"
+              >
+                <ShoppingCart className="h-5 w-5 text-gray-600 group-hover:text-black transition-colors duration-200" />
+                {totalQuantity > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-black text-white text-xs w-4 h-4 flex items-center justify-center rounded-full font-medium font-sans">
+                    {totalQuantity}
+                  </span>
+                )}
+              </Link>
+            )}
+            <button onClick={toggleMenu} className="p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+              {isOpen ? <X className="h-6 w-6 text-gray-600" /> : <Menu className="h-6 w-6 text-gray-600" />}
+            </button>
           </div>
         </div>
+
+        {isOpen && (
+          <div className="md:hidden border-t border-gray-100 bg-white">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <Link
+                href="/customer/homepage"
+                className="block px-3 py-2 text-gray-600 hover:text-black hover:bg-gray-50 rounded-lg transition-colors duration-200 font-medium font-sans"
+                onClick={() => setIsOpen(false)}
+              >
+                Home
+              </Link>
+              <Link
+                href="/customer/filter"
+                className="block px-3 py-2 text-gray-600 hover:text-black hover:bg-gray-50 rounded-lg transition-colors duration-200 font-medium font-sans"
+                onClick={() => setIsOpen(false)}
+              >
+                Products
+              </Link>
+              <Link
+                href="/contact"
+                className="block px-3 py-2 text-gray-600 hover:text-black hover:bg-gray-50 rounded-lg transition-colors duration-200 font-medium font-sans"
+                onClick={() => setIsOpen(false)}
+              >
+                Contact
+              </Link>
+              {!isAuthenticated && (
+                <Link
+                  href="/sign-in"
+                  className="block mx-3 mt-4 bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 transition-colors duration-200 font-medium text-center font-sans"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Sign In
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   )

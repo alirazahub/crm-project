@@ -6,9 +6,7 @@ const UserSchema = new mongoose.Schema({
   fullname: { type: String, required: true },
   email: { type: String, unique: true, required: true },
   role: { type: String, enum: ["user", "admin" , "sales" , "manager"], default: "user" },
-  password: { type: String, required: false }, // Made optional for Google users
-  phone: { type: String, },
-  address: { type: String, },
+  password: { type: String, required: false }, // Made optional for Google user
   createdAt: { type: Date, default: Date.now },
   previousPasswords: { type: [String], default: [] }
 });

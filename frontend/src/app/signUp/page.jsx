@@ -16,6 +16,7 @@ export default function SignUp() {
     name: "",
     email: "",
     password: "",
+    role:"user",
   });
   const [showPassword, setShowPassword] = useState(false);
 
@@ -26,7 +27,7 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await dispatch(registerUser(formData));
+    const result = await dispatch(signupUser(formData));
     if (result.meta.requestStatus === "fulfilled") {
       router.replace("/customer/homepage");
     }
@@ -120,7 +121,23 @@ export default function SignUp() {
             </button>
             <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-black transition-all peer-focus:w-full" />
           </div>
-
+          {/* Role */}
+<div className="relative">
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Role
+  </label>
+  <select
+    name="role"
+    value={formData.role}
+    onChange={handleChange}
+    required
+    className="peer w-full px-4 py-2 border-b-2 border-gray-300 bg-transparent text-black focus:outline-none focus:border-black appearance-none cursor-pointer"
+  >
+    <option value="user">User</option>
+    <option value="admin">Admin</option>
+  </select>
+  <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-black transition-all peer-focus:w-full" />
+</div>
           {/* Error */}
           {error && (
             <motion.p

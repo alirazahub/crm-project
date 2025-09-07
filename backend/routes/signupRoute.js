@@ -2,44 +2,61 @@ import express from "express";
 import User from "../models/usermodel.js";
 
 const router = express.Router();
-
+// Fixed backend signup route
 router.post("/signup", async (req, res) => {
   try {
     console.log("POST /signup called");
     console.log("Request Body:", req.body);
 
-    const { fullname, email, password, phone, role } = req.body;
+    const { name, email, password, role } = req.body;
 
-    // 1. Validate required fields
-    if (!fullname || !email || !password || !role) {
-      return res.status(400).json({ message: "All required fields must be provided" });
+    // Validate required fields
+    if (!name || !email || !password) {
+      return res.status(400).json({ 
+        message: "Name, email, and password are required" 
+      });
     }
 
-    // 2. Check if user already exists
+    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists with this email" });
+      return res.status(400).json({ 
+        message: "User already exists with this email" 
+      });
     }
 
-    // 3. Save user directly (no hashing)
+    // Create new user with correct field mapping
     const newUser = new User({
-      fullname,
+      fullname: name, // Map 'name' from frontend to 'fullname' in schema
       email,
       password,
-      phone,
-      role
+      role: role || "user"
     });
 
-    await newUser.save();
+    const savedUser = await newUser.save();
 
-    // 4. Send success response
-    res.status(201).json({ message: "Registration successful", user: newUser });
+    // Remove password from response
+    const userResponse = {
+      id: savedUser._id,
+      fullname: savedUser.fullname,
+      email: savedUser.email,
+      role: savedUser.role,
+      createdAt: savedUser.createdAt
+    };
+
+    // Send success response (only once!)
+    res.status(201).json({ 
+      message: "Registration successful", 
+      user: userResponse 
+    });
+
   } catch (error) {
     console.error("Registration error:", error);
-    res.status(500).json({ message: error.message || "Something went wrong" });
+    res.status(500).json({ 
+      message: error.message || "Something went wrong" 
+    });
   }
 });
-
 router.get("/all-users", async (req, res) => {
   try {
     const users = await User.find().select("-password"); // Exclude passwords

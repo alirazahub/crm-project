@@ -461,7 +461,7 @@ export default function ProductsPage() {
       <div className="dark min-h-screen bg-gradient-to-br from-black to-slate-900 text-slate-100 relative overflow-hidden flex items-center justify-center">
         <div className="flex flex-col items-center">
           <Loader />
-          <p className="text-lg text-slate-300 mt-4">Loading orders...</p>
+          <p className="text-lg text-slate-300 mt-4">Loading products...</p>
         </div>
       </div>
     )

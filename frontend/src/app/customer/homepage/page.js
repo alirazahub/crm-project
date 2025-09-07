@@ -1,15 +1,14 @@
-'use client';
+"use client";
 
-import HeroSection from '@/components/HeroSection';
-import Navbar from '../../../components/Navbar';
-import UserProducts from '@/components/UserProduct';
-
-import { useSelector } from 'react-redux';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import HeroSection from "@/components/HeroSection";
+import Navbar from "../../../components/Navbar";
+import UserProducts from "@/components/UserProduct";
+import FashionCollections  from "@/components/ui/middleHome";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function HomePage() {
-
   const { user, isAuthenticated, loading } = useSelector((state) => state.auth);
   const router = useRouter();
   const [checked, setChecked] = useState(false);
@@ -36,11 +35,10 @@ export default function HomePage() {
 
   return (
     <>
-      
-      <HeroSection />
-      <UserProducts />
-    
-
+      <div className="min-h-screen">
+        <HeroSection />
+        <FashionCollections/>
+      </div>
     </>
   );
 }
