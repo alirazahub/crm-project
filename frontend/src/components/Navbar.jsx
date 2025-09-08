@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useState } from "react"
-import { ShoppingCart, Menu, X } from "lucide-react"
-import { useSelector } from "react-redux"
-import Profile from "./Profile"
+import Link from "next/link";
+import { useState } from "react";
+import { ShoppingCart, Menu, X } from "lucide-react";
+import { useSelector } from "react-redux";
+import Profile from "./Profile";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false)
-  const { user, isAuthenticated } = useSelector((state) => state.auth)
-  const { totalQuantity } = useSelector((state) => state.cart)
+  const [isOpen, setIsOpen] = useState(false);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const { totalQuantity } = useSelector((state) => state.cart);
 
-  const toggleMenu = () => setIsOpen(!isOpen)
+  const toggleMenu = () => setIsOpen(!isOpen);
 
   return (
-    <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 font-sans">
+    <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 font-sans shadow-md shadow-gray-400">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
@@ -40,10 +40,10 @@ export default function Navbar() {
               Products
             </Link>
             <Link
-              href="/contact"
+              href="/customer/contactUs"
               className="text-gray-600 hover:text-black font-medium transition-colors duration-200 font-sans"
             >
-              Contact
+              Contact Us
             </Link>
 
             {isAuthenticated && user?.role === "user" && (
@@ -88,8 +88,15 @@ export default function Navbar() {
                 )}
               </Link>
             )}
-            <button onClick={toggleMenu} className="p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200">
-              {isOpen ? <X className="h-6 w-6 text-gray-600" /> : <Menu className="h-6 w-6 text-gray-600" />}
+            <button
+              onClick={toggleMenu}
+              className="p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+            >
+              {isOpen ? (
+                <X className="h-6 w-6 text-gray-600" />
+              ) : (
+                <Menu className="h-6 w-6 text-gray-600" />
+              )}
             </button>
           </div>
         </div>
@@ -112,11 +119,11 @@ export default function Navbar() {
                 Products
               </Link>
               <Link
-                href="/contact"
+                href="/customer/contactUs"
                 className="block px-3 py-2 text-gray-600 hover:text-black hover:bg-gray-50 rounded-lg transition-colors duration-200 font-medium font-sans"
                 onClick={() => setIsOpen(false)}
               >
-                Contact
+                Contact Us
               </Link>
               {!isAuthenticated && (
                 <Link
@@ -132,5 +139,5 @@ export default function Navbar() {
         )}
       </div>
     </nav>
-  )
+  );
 }

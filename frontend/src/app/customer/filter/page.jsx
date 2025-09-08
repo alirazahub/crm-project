@@ -156,10 +156,10 @@ export default function FilterPage() {
     }
     dispatch(
       addToCart({
-        _id: product._id,
-        name: product.name,
-        price: product.price,
-        image: product.images?.[0] || "/placeholder.svg",
+        productId: product._id,
+        // name: product.name,
+        // price: product.price,
+        // image: product.images?.[0] || "/placeholder.svg",
         quantity: 1,
       })
     );
